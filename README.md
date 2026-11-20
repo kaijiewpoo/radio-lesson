@@ -11,6 +11,7 @@
 | `src/lesson-src.html` | ต้นฉบับบทเรียน (มีตัวแทน `{{QR}}`) → สร้าง `index.html` ด้วย `python3 build.py` |
 | `src/cheatsheet.html`, `student.html`, `placard.html` | ต้นฉบับใบสรุป A4, ใบขั้นตอนนักเรียน, แผ่นป้ายเปิด-ปิดข่าย (ฟอนต์ Kanit / IBM Plex Sans Thai โหลดจากเครื่องที่สร้าง PDF) |
 | `print/` | PDF พร้อมพิมพ์ |
+| `docs/lesson-plan.md` | แผนการสอน 3 คาบ (คาบละ 50 นาที) |
 | `qr/` | QR ของลิงก์บทเรียน |
 | `slides/` | ไฟล์ต้นฉบับสไลด์ 15 หน้า (รูปแบบ deck.json + slides/*.html) |
 
