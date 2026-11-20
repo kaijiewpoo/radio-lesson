@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>บทเรียนระเบียบการวิทยุโทรศัพท์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* layout: amber radio-console hero with live waveform + progress, sticky unit nav, single lesson column; interactive drills sit in console-style panels */
+:root{
+  --bg:#f2f3ef; --surface:#ffffff; --ink:#1b231e; --muted:#5a655d; --line:#d5dad2;
+  --accent:#c4561a; --accent-soft:#f6e3d7; --olive:#3d5a40; --olive-soft:#e1e9de;
+  --console:#151b17; --console-2:#1f2822; --phosphor:#ffb547; --phosphor-dim:#8a6a3a;
+  --ok:#2f7a45; --ok-soft:#dcefe1; --bad:#b3312c; --bad-soft:#f7dedc; --gold:#b8891c;
+  --display:"Kanit","IBM Plex Sans Thai",system-ui,sans-serif;
+  --body:"IBM Plex Sans Thai","Sarabun","Noto Sans Thai",system-ui,sans-serif;
+  --mono:"IBM Plex Mono","IBM Plex Sans Thai",ui-monospace,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#121814; --surface:#1b231f; --ink:#e6ebe5; --muted:#a0aba2; --line:#323e37;
+    --accent:#f08a4b; --accent-soft:#3a2518; --olive:#9cc29f; --olive-soft:#223129;
+    --console:#0b0f0c; --console-2:#161d18;
+    --ok:#7fd196; --ok-soft:#1c3224; --bad:#f08c86; --bad-soft:#3a1f1d; --gold:#e3b54a; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121814; --surface:#1b231f; --ink:#e6ebe5; --muted:#a0aba2; --line:#323e37;
+  --accent:#f08a4b; --accent-soft:#3a2518; --olive:#9cc29f; --olive-soft:#223129;
+  --console:#0b0f0c; --console-2:#161d18;
+  --ok:#7fd196; --ok-soft:#1c3224; --bad:#f08c86; --bad-soft:#3a1f1d; --gold:#e3b54a; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.7}
+a{color:var(--accent)}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.3;text-wrap:balance;margin:0}
+h2{font-size:clamp(23px,3.6vw,29px)}
+h3{font-size:19px;font-weight:500}
+p{margin:0}
+.wrap{max-width:920px;margin:0 auto;padding:0 18px}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* ---------- hero console ---------- */
+.hero{background:var(--console);color:#efe9dd;padding:28px 0 26px}
+.hero .wrap{display:grid;gap:22px;grid-template-columns:1.4fr 1fr;align-items:center}
+@media (max-width:720px){.hero .wrap{grid-template-columns:1fr}}
+.hero .unit{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--phosphor)}
+.hero h1{font-size:clamp(30px,5.4vw,46px);font-weight:700;color:#fff;margin-top:6px}
+.hero p.lede{color:#c9c3b6;margin-top:10px;max-width:52ch}
+.display{background:var(--console-2);border:1px solid #2c362f;border-radius:12px;padding:14px 16px;box-shadow:inset 0 0 0 1px #0006}
+.display .row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--phosphor-dim)}
+.display .freq{font-family:var(--mono);font-size:30px;color:var(--phosphor);letter-spacing:.04em;text-shadow:0 0 12px #ffb54755;margin:4px 0}
+.display canvas{width:100%;height:64px;display:block}
+.prog{display:flex;align-items:center;gap:12px;margin-top:10px}
+.prog .bar{flex:1;height:8px;background:#2a332d;border-radius:4px;overflow:hidden}
+.prog .bar i{display:block;height:100%;background:var(--phosphor);width:0;transition:width .4s}
+.prog span{font-family:var(--mono);font-size:13px;color:var(--phosphor)}
+.hero .cta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.hero .cta a{text-decoration:none;font-size:15px;padding:8px 14px;border-radius:8px;border:1px solid #3a463e;color:#efe9dd}
+.hero .cta a.go{background:var(--phosphor);border-color:var(--phosphor);color:#1b1408;font-weight:600}
+
+/* ---------- nav ---------- */
+nav.lessons{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav.lessons .wrap{display:flex;gap:6px;overflow-x:auto;padding-top:10px;padding-bottom:10px;scrollbar-width:thin}
+nav.lessons a{flex:none;text-decoration:none;color:var(--ink);font-size:14px;padding:5px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface);white-space:nowrap}
+nav.lessons a:hover,nav.lessons a:focus-visible{border-color:var(--accent);color:var(--accent)}
+nav.lessons a b{font-family:var(--mono);font-weight:500;color:var(--accent);margin-right:6px}
+nav.lessons a.done{background:var(--ok-soft);border-color:var(--ok)}
+nav.lessons a.done b{color:var(--ok)}
+nav.lessons a.done b::after{content:" ✓"}
+
+/* ---------- sections ---------- */
+section.lesson{padding:46px 0 8px;scroll-margin-top:60px}
+.sec-head{display:flex;gap:14px;align-items:baseline;margin-bottom:4px}
+.num{font-family:var(--mono);color:var(--accent);font-size:15px;flex:none}
+.stack{display:flex;flex-direction:column;gap:16px}
+.prose{max-width:66ch}
+.grid{display:grid;gap:12px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.card h3{margin-bottom:6px}
+.card ul{margin:0;padding-left:20px}
+.pillar{border-top:4px solid var(--olive)}
+.en{font-family:var(--mono);font-size:12px;color:var(--muted);font-weight:500}
+ul.clean{margin:0;padding-left:20px}
+ul.clean li+li{margin-top:4px}
+.callout{border-left:4px solid var(--accent);background:var(--accent-soft);padding:12px 16px;border-radius:0 8px 8px 0}
+.say{background:var(--olive-soft);border-radius:8px;padding:8px 12px;display:flex;gap:8px;align-items:flex-start;margin-top:6px}
+.say .t{flex:1}
+.say .t::before{content:"พูด ▸ ";font-family:var(--mono);font-size:12px;color:var(--olive)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:16px}
+th,td{text-align:left;padding:9px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;font-size:14px;color:var(--muted);background:var(--bg)}
+tr:last-child td{border-bottom:0}
+.done-row{display:flex;justify-content:flex-end;padding-top:6px}
+.mark{font:inherit;font-size:14px;cursor:pointer;border:1px dashed var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:6px 14px}
+.mark[aria-pressed="true"]{border-style:solid;border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+
+/* phonetic */
+.phon{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:8px}
+.phon button{all:unset;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column}
+.phon button:hover,.phon button:focus-visible{border-color:var(--accent)}
+.phon .l{font-family:var(--display);font-size:22px;color:var(--accent);line-height:1.1}
+.phon .w{font-family:var(--mono);font-size:14px}
+.phon .p{font-size:12px;color:var(--muted)}
+
+/* controls */
+.btn{font:inherit;font-size:15px;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 14px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn:focus-visible,input:focus-visible,.mark:focus-visible,.opt:focus-visible,.phon button:focus-visible,.tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.play{font:inherit;font-size:13px;cursor:pointer;border:1px solid var(--olive);color:var(--olive);background:transparent;border-radius:999px;padding:2px 10px;flex:none;white-space:nowrap}
+.play.on{background:var(--olive);color:var(--surface)}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+input[type=search],input[type=text],textarea{font:inherit;font-size:16px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+input[type=search]{flex:1;min-width:200px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{font:inherit;font-size:14px;border:0;background:var(--surface);color:var(--ink);padding:7px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+
+/* flashcard */
+.flash{min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;cursor:pointer}
+.flash .front{font-family:var(--mono);font-size:26px}
+.flash .back{font-family:var(--display);font-size:24px;color:var(--olive)}
+.flash .hint{font-size:13px;color:var(--muted)}
+
+/* console panel (drills) */
+.panel{background:var(--console);color:#ece6da;border-radius:12px;padding:18px;border:1px solid #2a342d}
+.panel h3{color:#fff}
+.panel .muted{color:#a9a294}
+.panel .big{font-family:var(--mono);font-size:clamp(34px,8vw,52px);color:var(--phosphor);letter-spacing:.12em;text-shadow:0 0 14px #ffb54744}
+.panel .btn{background:#222b25;color:#ece6da;border-color:#3a463e}
+.panel .btn.primary{background:var(--phosphor);border-color:var(--phosphor);color:#1b1408}
+.panel .reveal{font-size:20px;color:#fff;min-height:1.7em}
+
+/* steps */
+.steps{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.steps ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;counter-reset:s}
+.steps li{counter-increment:s;display:grid;grid-template-columns:30px 1fr;gap:10px}
+.steps li::before{content:counter(s);font-family:var(--mono);background:var(--ink);color:var(--bg);width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:13px;margin-top:2px}
+.steps .open h3{color:var(--ok)}
+.steps .close h3{color:var(--accent)}
+
+/* precedence */
+.prec{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.prec div{border-radius:8px;padding:10px 12px;border:1px solid var(--line);background:var(--surface)}
+.prec b{font-family:var(--display);font-weight:500;font-size:18px;display:block}
+.prec span{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.prec .p4{border-left:6px solid var(--bad)} .prec .p3{border-left:6px solid var(--accent)}
+.prec .p2{border-left:6px solid var(--gold)} .prec .p1{border-left:6px solid var(--olive)}
+
+/* missions */
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{font:inherit;cursor:pointer;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:10px 14px;flex:1;min-width:180px}
+.tab small{display:block;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.tab[aria-selected="true"]{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent)}
+.tab .star{color:var(--gold)}
+.radio-line{background:var(--console);color:#ece6da;border-radius:10px;padding:12px 16px;display:flex;gap:10px;align-items:flex-start}
+.radio-line .t{flex:1}
+.radio-line small{display:block;font-family:var(--mono);font-size:12px;color:var(--phosphor)}
+.radio-line .play{border-color:var(--phosphor);color:var(--phosphor)}
+.radio-line .play.on{background:var(--phosphor);color:#1b1408}
+.opts{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.opt{all:unset;cursor:pointer;border:1px solid var(--line);border-radius:8px;padding:10px 14px;background:var(--surface)}
+.opt:hover{border-color:var(--accent)}
+.opt.right{background:var(--ok-soft);border-color:var(--ok)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.opt[aria-disabled="true"]{cursor:default}
+.fb{margin-top:10px;font-size:15px}
+.fb.ok{color:var(--ok)} .fb.no{color:var(--bad)}
+.progress{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.score{font-family:var(--display);font-size:22px}
+.stars{font-size:28px;letter-spacing:4px;color:var(--gold)}
+
+/* certificate */
+.cert{border:2px solid var(--ink);border-radius:12px;padding:22px;background:var(--surface);position:relative;overflow:hidden}
+.cert::before{content:"";position:absolute;inset:6px;border:1px solid var(--line);border-radius:8px;pointer-events:none}
+.cert .stamp{position:absolute;right:18px;top:18px;width:92px;height:92px;border-radius:50%;border:3px solid var(--ok);color:var(--ok);display:grid;place-items:center;text-align:center;font-family:var(--display);font-size:15px;line-height:1.2;transform:rotate(-12deg)}
+.cert .stamp.fail{border-color:var(--bad);color:var(--bad)}
+.cert h3,.cert>p.mono{margin-right:96px}
+.cert dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:12px 0 0}
+.cert dt{color:var(--muted);font-size:14px}
+.cert dd{margin:0;font-weight:500}
+.form{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.form label{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted)}
+
+.links{display:flex;flex-wrap:wrap;gap:8px}
+.links a,.links span{font-size:14px;text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;background:var(--bg);color:var(--ink)}
+.links a:hover{border-color:var(--accent);color:var(--accent)}
+.links span{color:var(--muted);border-style:dashed}
+.qr{background:#fff;border-radius:10px;padding:10px;width:150px;flex:none}
+.qr svg{width:100%;height:auto;display:block}
+footer{padding:40px 0 60px;color:var(--muted);font-size:14px;border-top:1px solid var(--line);margin-top:50px}
+footer .wrap{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+details.teacher summary{cursor:pointer;color:var(--muted);font-size:14px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:420px){body{font-size:16px} th,td{padding:8px 10px} .cert .stamp{width:72px;height:72px;font-size:12px}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <div class="unit">วสว.กศ.รร.ส.สส. · บทเรียนออนไลน์</div>
+      <h1>ระเบียบการวิทยุโทรศัพท์</h1>
+      <p class="lede">มี 9 บท ใช้เวลาประมาณ 75 นาที กดปุ่ม <strong style="color:var(--phosphor)">▶ ฟัง</strong> เพื่อฟังประโยคแบบเสียงวิทยุ ฝึกภารกิจจำลอง 3 ภารกิจ แล้วทำแบบทดสอบเพื่อรับใบรายงานผลส่งครู</p>
+      <div class="cta"><a class="go" href="#why">เริ่มเรียน</a><a href="#pretest">ทดสอบก่อนเรียน</a><a href="#quiz">ทำแบบทดสอบ</a></div>
+    </div>
+    <div class="display" aria-label="แผงวิทยุ">
+      <div class="row"><span>NET · ดอกไม้</span><span id="clock">--:--</span></div>
+      <div class="freq">30.000 <span style="font-size:16px">MHz</span></div>
+      <canvas id="wave" width="600" height="128" aria-hidden="true"></canvas>
+      <div class="prog"><div class="bar"><i id="progBar"></i></div><span id="progTxt">0/10 ขั้น</span></div>
+    </div>
+  </div>
+</header>
+
+<nav class="lessons" aria-label="สารบัญบทเรียน">
+  <div class="wrap" id="navWrap">
+    <a href="#why"><b>0</b>ทำไมต้องเรียน</a>
+    <a href="#pretest" data-u="pretest"><b>PRE</b>ทดสอบก่อนเรียน</a>
+    <a href="#principles" data-u="principles"><b>1</b>หลักการ</a>
+    <a href="#phonetic" data-u="phonetic"><b>2</b>การออกเสียง</a>
+    <a href="#prowords" data-u="prowords"><b>3</b>Proword</a>
+    <a href="#calling" data-u="calling"><b>4</b>การเรียกขาน</a>
+    <a href="#net" data-u="net"><b>5</b>ข่ายและ สบข.</a>
+    <a href="#messages" data-u="messages"><b>6</b>ข่าวและแบบบันทึก</a>
+    <a href="#security" data-u="security"><b>7</b>รักษาความปลอดภัย</a>
+    <a href="#missions" data-u="missions"><b>8</b>ภารกิจจำลอง</a>
+    <a href="#quiz" data-u="quiz"><b>9</b>แบบทดสอบ</a>
+  </div>
+</nav>
+
+<main class="wrap">
+<div class="toolbar" style="padding-top:18px;justify-content:space-between">
+  <span class="muted" style="font-size:15px">ก่อนเริ่ม: เปิดเสียงเครื่อง แล้วกดทดสอบ ถ้าได้ยินเสียงพูด ปุ่ม ▶ ฟัง ทั้งหน้าก็ใช้ได้</span>
+  <div class="toolbar"><div class="seg" role="group" aria-label="ความเร็วเสียงอ่าน" id="rateSeg">
+    <button type="button" data-r="0.55" aria-pressed="false">ช้ามาก</button><button type="button" data-r="0.7" aria-pressed="false">ช้า</button><button type="button" data-r="0.9" aria-pressed="false">ปกติ</button></div>
+  <button class="play" type="button" data-say="ทดสอบ ทดสอบ หนึ่ง โท สาม-หาม เปลี่ยน">▶ ทดสอบเสียง</button></div>
+</div>
+<div class="callout" id="audioNote" hidden style="margin-top:12px"><strong>ไม่มีเสียง?</strong> <span></span><br><span class="muted" style="font-size:14px">ถ้าเปิดจากแอปไลน์หรือแอป Claude ให้กดเมนู ⋯ แล้วเลือก “เปิดในเบราว์เซอร์” · iPhone: ปิดสวิตช์โหมดเงียบ · ข้อความทุกประโยคยังอ่านได้บนจอ</span></div>
+
+<!-- 0 -->
+<section class="lesson stack" id="why">
+  <div class="sec-head"><span class="num">00</span><h2>ทำไมต้องเรียนระเบียบการวิทยุโทรศัพท์</h2></div>
+  <p class="prose">การติดต่อสื่อสาร ถ้าไม่ได้คุยในรูปแบบเดียวกัน ต่างคนต่างภาษา ต่างสำเนียง ก็จะเกิดความสับสนและเข้าใจผิดได้ง่าย ยิ่งในภารกิจด้านความมั่นคง ความผิดพลาดเพียงประโยคเดียวอาจส่งผลกระทบในวงกว้าง</p>
+  <p class="prose">การมี <strong>ระเบียบ</strong> ไว้ยึดเป็นแนวทางปฏิบัติร่วมกัน จะทำให้การปฏิบัติไม่สับสน และผิดพลาดน้อยลง ทั้งนี้ผลลัพธ์จริงยังขึ้นอยู่กับ <strong>ประสบการณ์และความชำนาญของพนักงานวิทยุ</strong> จึงต้องเรียนให้เข้าใจและฝึกจนคล่อง</p>
+  <div class="grid g2">
+    <div class="card" style="border-top:4px solid var(--bad)"><h3>ต่างคนต่างพูด</h3>
+      <div class="say" style="background:var(--bad-soft)"><span class="t">เฮ้ย ได้ยินมั้ย ตอนนี้เก้าโมงสิบห้านะ เดี๋ยวส่งของไปให้</span><button class="play" type="button" data-say="เฮ้ย ได้ยินมั้ย ตอนนี้เก้าโมงสิบห้านะ เดี๋ยวส่งของไปให้">▶ ฟัง</button></div>
+      <ul class="clean" style="margin-top:8px;font-size:15px"><li>ไม่รู้ว่าใครเรียกใคร</li><li>เวลาฟังผิดได้ง่ายเมื่อสัญญาณไม่ดี</li><li>ไม่รู้ว่าต้องตอบหรือไม่</li></ul></div>
+    <div class="card" style="border-top:4px solid var(--ok)"><h3>พูดตามระเบียบ</h3>
+      <div class="say"><span class="t">จำปา จาก กุหลาบ ขณะนี้เป็นเวลา ศูนย์ เก้า หนึ่ง ห้า ข้าพเจ้ามีข่าว ๑ ฉบับ พร้อมรับหรือไม่ เปลี่ยน</span><button class="play" type="button" data-say="จำปา จาก กุหลาบ ขณะนี้เป็นเวลา ศูนย์ เก้า หนึ่ง ห้า ข้าพเจ้ามีข่าว หนึ่ง ฉบับ พร้อมรับหรือไม่ เปลี่ยน">▶ ฟัง</button></div>
+      <ul class="clean" style="margin-top:8px;font-size:15px"><li>ระบุผู้ถูกเรียกและผู้เรียกชัดเจน</li><li>อ่านเวลาเป็นรายตัว ฟังผิดยาก</li><li>“เปลี่ยน” บอกว่าถึงตาอีกฝ่ายตอบ</li></ul></div>
+  </div>
+  <div class="grid g3">
+    <div class="card pillar"><h3>ภาษาเดียวกัน</h3><p>ทุกสถานีใช้คำพูดและลำดับขั้นตอนแบบเดียวกัน ไม่ว่ามาจากหน่วยไหนหรือพูดสำเนียงใด</p></div>
+    <div class="card pillar"><h3>ลดความผิดพลาด</h3><p>คำที่กำหนดความหมายไว้แล้วช่วยตัดการตีความ จึงสั่งการได้ถูกต้องแม้สัญญาณไม่ดี</p></div>
+    <div class="card pillar"><h3>ฝึกจนเป็นนิสัย</h3><p>ระเบียบช่วยได้เต็มที่เมื่อพนักงานวิทยุฝึกจนชำนาญ พูดได้ถูกต้องโดยไม่ต้องคิด</p></div>
+  </div>
+</section>
+
+<!-- PRE -->
+<section class="lesson stack" id="pretest">
+  <div class="sec-head"><span class="num">PRE</span><h2>ทดสอบก่อนเรียน</h2></div>
+  <p class="prose muted">10 ข้อ ใช้เวลาประมาณ 5 นาที ไม่ต้องกังวลเรื่องคะแนน แบบทดสอบนี้ใช้ดูว่าก่อนเรียนรู้อะไรอยู่แล้ว และควรเน้นบทไหน ระหว่างทำจะยังไม่เฉลย ทำเสร็จแล้วจะเห็นผลรายบท คะแนนนี้จะไปแสดงเทียบกับคะแนนหลังเรียนในใบรายงานผล</p>
+  <div class="card stack" id="preBox"></div>
+</section>
+
+<!-- 1 -->
+<section class="lesson stack" id="principles">
+  <div class="sec-head"><span class="num">01</span><h2>หลักการและกฎพื้นฐาน</h2></div>
+  <p class="prose"><strong>วิทยุโทรศัพท์ (Radio Telephone)</strong> คือการติดต่อทางวิทยุที่รับ-ส่งด้วยคำพูดหรือเสียง ไม่ใช่ประมวลเลขสัญญาณ ใช้ได้ทั้งในเวลาปกติและทางยุทธวิธี <strong>ระเบียบการวิทยุ (Radio Procedure)</strong> คือหลักเกณฑ์ที่ทุกสถานีปฏิบัติเหมือนกัน เพื่อให้การสื่อสารถูกต้อง รวดเร็ว และแน่นอน</p>
+  <div class="grid g3">
+    <div class="card pillar"><h3>รวดเร็ว <span class="en">SPEED</span></h3>
+      <ul><li>ส่งข่าวให้ทันต่อการปฏิบัติ</li><li>ไม่ให้มีข่าวตกค้าง</li><li>ส่งเร็วเท่าที่ผู้รับรับได้</li><li>ไม่ทวนซ้ำเกินจำเป็น</li></ul></div>
+    <div class="card pillar"><h3>แน่นอน <span class="en">ACCURACY</span></h3>
+      <ul><li>รับ-ส่งถูกต้อง ไม่ตกหล่น</li><li>ไม่แก้ไขหรือแต่งเติมข่าวจากต้นฉบับ</li><li>รับข่าวเสร็จต้องตอบยืนยันทุกครั้ง</li></ul></div>
+    <div class="card pillar"><h3>ปลอดภัย <span class="en">SECURITY</span></h3>
+      <ul><li>ใช้ระบบรับรองฝ่ายก่อนรับ-ส่งข่าว</li><li>เลือกวงจรที่ปลอดภัยที่สุด</li><li>ข่าวที่มีชั้นความลับต้องเข้ารหัสทุกครั้ง</li><li>รักษาวินัยในวงจรอย่างเคร่งครัด</li></ul></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>ข้อห้าม</h3>
+      <ul class="clean">
+        <li>ส่งข่าวที่ยังไม่ได้รับอนุญาตจากผู้มีอำนาจหน้าที่</li>
+        <li>ฝ่าฝืนการระงับวิทยุ (ห้ามใช้)</li>
+        <li>สนทนาเรื่องที่ไม่ใช่ราชการ</li>
+        <li>ส่งข่าวในข่ายบังคับโดยไม่ได้รับอนุญาต</li>
+        <li>ปรับความถี่หรือทดลองเครื่องนานเกิน <strong>10 วินาที</strong></li>
+        <li>ส่งชื่อจริง ชื่อย่อ หรือชื่อเล่นของพนักงาน</li>
+        <li>ใช้ภาษาหยาบคายหรือภาษาแสลง</li>
+      </ul></div>
+    <div class="card"><h3>เทคนิคการส่งข่าว</h3>
+      <ul class="clean">
+        <li>เปิดข่ายครั้งแรกต้องรับรองฝ่ายเสมอ</li>
+        <li>ในข่ายบังคับ ตอบตามศักดิ์สถานี</li>
+        <li>อ่านข่าวให้เข้าใจก่อนส่ง จะได้ไม่สะดุด</li>
+        <li>ตัวเลขและคำยากให้ส่งซ้ำ</li>
+        <li>อย่าให้ข่าวตกค้างเกิน 24 ชั่วโมง</li>
+        <li>ใช้กำลังส่งต่ำที่สุดเท่าที่ยังติดต่อได้ เพื่อ รปภ.ส.</li>
+        <li>เฝ้าฟังข่ายตลอดเวลา เพื่อตอบได้ทันที</li>
+      </ul></div>
+  </div>
+  <div class="card"><h3>การเลือกที่ตั้งสถานีวิทยุ</h3>
+    <p class="muted" style="margin-bottom:8px">ในบรรดาปัจจัยสามข้อ ได้แก่ ประสิทธิภาพของเครื่อง ความสามารถของพนักงาน และที่ตั้งสถานี ที่ตั้งสถานีสำคัญที่สุด</p>
+    <div class="grid g2">
+      <ul class="clean">
+        <li><strong>รับ-ส่งได้ผลดี:</strong> ตั้งให้สูง ไม่ตั้งในหุบเขา ใต้อุโมงค์ สะพานเหล็ก หรือใกล้สายไฟแรงสูง สายอากาศต้องไม่แตะสิ่งใด</li>
+        <li><strong>ซ่อนพรางดี:</strong> ไม่ตั้งบนสันเนินที่ตัดกับเส้นขอบฟ้า และพรางให้กลมกลืนกับภูมิประเทศ</li>
+      </ul>
+      <ul class="clean">
+        <li><strong>ติดต่อศูนย์ข่าวได้สะดวก</strong> ทั้งโดยพลนำสารและโทรศัพท์</li>
+        <li><strong>ไม่เป็นอันตรายต่อ บก.:</strong> สถานีกำลังส่งสูงต้องอยู่ห่าง บก. อย่างน้อย <strong>200 หลา</strong> เพราะข้าศึกอาจหาทิศแล้วโจมตี</li>
+      </ul>
+    </div>
+  </div>
+  <div class="done-row"><button class="mark" type="button" data-unit="principles" aria-pressed="false">ทำเครื่องหมายว่าเรียนบทนี้แล้ว</button></div>
+</section>
+
+<!-- 2 -->
+<section class="lesson stack" id="phonetic">
+  <div class="sec-head"><span class="num">02</span><h2>การออกเสียงตัวเลขและตัวอักษร</h2></div>
+  <div class="grid g2">
+    <div class="stack">
+      <h3>ตัวเลขภาษาไทย</h3>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>เลข</th><th>อ่านว่า</th><th>เลข</th><th>อ่านว่า</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">๐</td><td>ศูนย์</td><td class="mono">๕</td><td>ห้า</td></tr>
+          <tr><td class="mono">๑</td><td>หนึ่ง</td><td class="mono">๖</td><td>หก</td></tr>
+          <tr><td class="mono">๒</td><td><strong>โท</strong></td><td class="mono">๗</td><td>เจ็ด</td></tr>
+          <tr><td class="mono">๓</td><td>สาม (สาม-หาม)</td><td class="mono">๘</td><td>แปด</td></tr>
+          <tr><td class="mono">๔</td><td>สี่</td><td class="mono">๙</td><td>เก้า</td></tr>
+        </tbody></table></div>
+    </div>
+    <div class="stack">
+      <h3>กฎการอ่าน</h3>
+      <ul class="clean">
+        <li>อ่านเป็นรายตัว ยกเว้นจำนวนเต็มถ้วน ๆ เช่น ร้อย พัน หมื่น</li>
+        <li>เลข ๒ ที่อ่านรายตัวให้อ่านว่า <strong>โท</strong> แต่ถ้าไม่ได้อ่านรายตัวให้อ่านว่า สอง</li>
+        <li>รหัสหรือประมวลเลขต้องอ่านรายตัวเสมอ</li>
+        <li>เวลาและหมู่วันเวลาต้องอ่านรายตัวเสมอ ไม่มีข้อยกเว้น</li>
+      </ul>
+      <div class="callout"><span class="mono">๒๑๐๖๓๐</span> อ่านว่า “โท หนึ่ง ศูนย์ หก สาม-หาม ศูนย์” หมายถึงวันที่ ๒๑ เวลา ๐๖๓๐</div>
+    </div>
+  </div>
+
+  <div class="panel stack" style="gap:12px">
+    <div class="toolbar" style="justify-content:space-between"><h3>ฝึกอ่านหมู่วันเวลา</h3><span class="mono muted" id="dtgStreak">ถูกต่อเนื่อง 0 ครั้ง</span></div>
+    <p class="muted">ลองอ่านออกเสียงเองก่อน แล้วกด “เฉลย” เพื่อตรวจ</p>
+    <div class="big" id="dtgNum" aria-live="polite">๒๑๐๖๓๐</div>
+    <div class="reveal" id="dtgAns" aria-live="polite"></div>
+    <div class="toolbar">
+      <button class="btn primary" type="button" id="dtgShow">เฉลย</button>
+      <button class="btn" type="button" id="dtgPlay">▶ ฟัง</button>
+      <button class="btn" type="button" id="dtgOk">อ่านถูก ✓</button>
+      <button class="btn" type="button" id="dtgNew">ข้อใหม่</button>
+    </div>
+  </div>
+
+  <div class="stack">
+    <h3>ตัวอักษรภาษาอังกฤษ <span class="muted" style="font-size:14px;font-family:var(--body)">(กดที่การ์ดเพื่อฟังเสียง)</span></h3>
+    <div class="phon" id="phon"></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>ตัวอักษรไทย</h3>
+      <p>อ่านชื่อตัวอักษรเต็ม เช่น ก กอไก่, ข ขอไข่, ส สอเสือ (หรือ สอสิงโต ตาม บสร.7)</p></div>
+    <div class="card"><h3>การสะกดตัว (I SPELL)</h3>
+      <div class="say"><span class="t">ขนลุก สะกดตัว ขอไข่ นอหนู ลอลิง สระอุ กอไก่ ขนลุก</span><button class="play" type="button" data-say="ขนลุก สะกดตัว ขอไข่ นอหนู ลอลิง สระอุ กอไก่ ขนลุก">▶ ฟัง</button></div>
+      <div class="say"><span class="t">PRODUCT I SPELL PAPA ROMEO OSCAR DELTA UNIFORM CHARLIE TANGO PRODUCT</span><button class="play" type="button" data-lang="en-US" data-say="PRODUCT. I spell. PAPA, ROMEO, OSCAR, DELTA, UNIFORM, CHARLIE, TANGO. PRODUCT.">▶ ฟัง</button></div></div>
+  </div>
+  <p class="muted" style="font-size:14px">เสียงมาจากเครื่องของผู้เรียน ถ้ากดแล้วไม่มีเสียงภาษาไทย ให้ติดตั้งเสียงภาษาไทยในการตั้งค่าเครื่อง (Text-to-Speech) หรือดูข้อความบนจอแทน</p>
+  <div class="done-row"><button class="mark" type="button" data-unit="phonetic" aria-pressed="false">ทำเครื่องหมายว่าเรียนบทนี้แล้ว</button></div>
+</section>
+
+<!-- 3 -->
+<section class="lesson stack" id="prowords">
+  <div class="sec-head"><span class="num">03</span><h2>คำพูดตามระเบียบการ (PROWORD)</h2></div>
+  <p class="prose">Proword คือคำหรือวลีที่กำหนดความหมายไว้แล้ว ใช้แทนประโยคยาว ๆ ให้ทุกสถานีในข่ายเข้าใจตรงกันทันที</p>
+  <div class="callout">ข้อผิดที่พบบ่อย: <strong>ROGER WILCO</strong> ห้ามพูดคู่กัน เพราะ WILCO รวมความหมาย “ทราบ” อยู่แล้ว ส่วน <strong>OVER AND OUT</strong> (เปลี่ยนและเลิก) ก็ใช้ไม่ได้ เพราะ “เปลี่ยน” คือให้อีกฝ่ายตอบ แต่ “เลิก” คือจบโดยไม่ต้องตอบ</div>
+  <div class="toolbar">
+    <input type="search" id="pwSearch" placeholder="ค้นหา เช่น OVER หรือ ส่งซ้ำ" aria-label="ค้นหาคำพูดตามระเบียบการ">
+    <div class="seg" role="group" aria-label="รูปแบบการแสดง">
+      <button type="button" id="modeList" aria-pressed="true">ตาราง</button>
+      <button type="button" id="modeCard" aria-pressed="false">บัตรคำ</button>
+    </div>
+  </div>
+  <div id="pwList" class="tbl-wrap"><table>
+    <thead><tr><th>Proword</th><th>ความหมาย</th></tr></thead>
+    <tbody id="pwBody"></tbody></table></div>
+  <div id="pwCard" hidden>
+    <div class="card flash" id="flash" tabindex="0" role="button" aria-label="พลิกบัตรคำ">
+      <div class="front" id="fFront"></div>
+      <div class="back" id="fBack" hidden></div>
+      <div class="hint" id="fHint">แตะเพื่อดูความหมาย</div>
+    </div>
+    <div class="toolbar" style="margin-top:10px;justify-content:space-between">
+      <button class="btn" type="button" id="fPrev">‹ ก่อนหน้า</button>
+      <span class="muted mono" id="fCount"></span>
+      <button class="btn" type="button" id="fNext">ถัดไป ›</button>
+    </div>
+  </div>
+  <div class="done-row"><button class="mark" type="button" data-unit="prowords" aria-pressed="false">ทำเครื่องหมายว่าเรียนบทนี้แล้ว</button></div>
+</section>
+
+<!-- 4 -->
+<section class="lesson stack" id="calling">
+  <div class="sec-head"><span class="num">04</span><h2>นามเรียกขาน การเรียก และการตอบ</h2></div>
+  <div class="grid g2">
+    <div class="card"><h3>หลักการตั้งนามเรียกขาน</h3>
+      <ul class="clean">
+        <li>เป็นวลีหรือหมู่คำสั้น ๆ ง่าย และไม่สับสน</li>
+        <li>จัดเป็นหมวดหมู่ ให้สังเกตได้ว่าเป็นหน่วยเครือเดียวกัน</li>
+        <li>เตรียมนามหลักและนามสำรองไว้</li>
+        <li>นามเต็มไม่ควรเกิน <strong>3 พยางค์</strong> ส่วนนามย่อไม่ควรเกิน <strong>3 ตัว</strong></li>
+      </ul>
+      <p class="muted" style="margin-top:8px">ตัวอย่าง ข่าย <strong>อัศวิน</strong> → หน่วยย่อยเติมสี เช่น ม้าแดง ม้าดำ ม้าลาย → หน่วยย่อยลงไปอีกเติมเลข เช่น ม้าแดง ๑, ม้าแดง ๒</p></div>
+    <div class="card"><h3>ประเภทของนามเรียกขาน</h3>
+      <ul class="clean">
+        <li><strong>นามเรียกขาน</strong> (Call sign) ใช้แทนสถานีหรือผู้บังคับบัญชา</li>
+        <li><strong>นามเรียกขานรวม</strong> (Collective) ใช้แทนตั้งแต่ 2 สถานีขึ้นไป</li>
+        <li><strong>นามเรียกขานข่าย</strong> (Net) ใช้แทนทุกสถานีในข่าย</li>
+        <li><strong>นามเรียกขานสากล</strong> (International) กำหนดตาม ITU เช่น HSA–HSZ คือประเทศไทย</li>
+      </ul></div>
+  </div>
+  <div class="grid g2">
+    <div class="card"><h3>การเรียก</h3>
+      <p><strong>เรียกเดียว</strong> ใช้นามเรียกขานเดียว (นามรวมก็นับเป็นการเรียกเดียว)</p>
+      <div class="say"><span class="t">ดอกไม้ จาก มะลิ เปลี่ยน</span><button class="play" type="button" data-say="ดอกไม้ จาก มะลิ เปลี่ยน">▶ ฟัง</button></div>
+      <p style="margin-top:10px"><strong>เรียกหลายสถานี</strong> ให้เรียงตามศักดิ์สถานี</p>
+      <div class="say"><span class="t">กุหลาบ จำปา จำปี พิกุล ลำดวน จาก มะลิ เปลี่ยน</span><button class="play" type="button" data-say="กุหลาบ จำปา จำปี พิกุล ลำดวน จาก มะลิ เปลี่ยน">▶ ฟัง</button></div></div>
+    <div class="card"><h3>การตอบ</h3>
+      <p><strong>ตอบธรรมดา</strong> ใช้เมื่อเริ่มติดต่อครั้งแรก หรือเมื่อติดต่อลำบาก</p>
+      <div class="say"><span class="t">มะลิ จาก กุหลาบ เปลี่ยน</span><button class="play" type="button" data-say="มะลิ จาก กุหลาบ เปลี่ยน">▶ ฟัง</button></div>
+      <p style="margin-top:10px"><strong>ตอบย่อ</strong> ใช้เมื่อติดต่อกันได้แล้วและสภาพการสื่อสารดี</p>
+      <div class="say"><span class="t">จาก กุหลาบ เปลี่ยน</span><button class="play" type="button" data-say="จาก กุหลาบ เปลี่ยน">▶ ฟัง</button></div>
+      <p class="muted" style="margin-top:10px;font-size:15px">ถ้าถูกเรียกหลายสถานี ให้ตอบตามลำดับ ถ้าสถานีใดไม่ตอบภายใน <strong>5 วินาที</strong> ให้สถานีลำดับถัดไปตอบได้เลย สถานีที่ข้ามไปแล้วให้ตอบเป็นลำดับสุดท้าย</p></div>
+  </div>
+  <div class="grid g2">
+    <div class="stack"><h3>ความแรง (ดัง)</h3>
+      <div class="tbl-wrap"><table><tbody>
+        <tr><td class="mono">VERY WEAK</td><td>เบามาก รับไม่ใคร่ได้</td></tr>
+        <tr><td class="mono">WEAK</td><td>เบา</td></tr>
+        <tr><td class="mono">FAIR</td><td>พอใช้</td></tr>
+        <tr><td class="mono">GOOD</td><td>ดังดี</td></tr>
+        <tr><td class="mono">VERY GOOD</td><td>ดังดีมาก</td></tr>
+      </tbody></table></div></div>
+    <div class="stack"><h3>ความชัดเจน</h3>
+      <div class="tbl-wrap"><table><tbody>
+        <tr><td class="mono">BAD</td><td>เลวมาก อ่านไม่ได้เลย</td></tr>
+        <tr><td class="mono">POOR</td><td>เลว อ่านไม่ค่อยได้</td></tr>
+        <tr><td class="mono">FAIR</td><td>พอใช้ พออ่านได้</td></tr>
+        <tr><td class="mono">GOOD</td><td>ดี อ่านได้ดี</td></tr>
+        <tr><td class="mono">EXCELLENT</td><td>ดีเยี่ยม ชัดเจนดี</td></tr>
+      </tbody></table></div></div>
+  </div>
+  <div class="done-row"><button class="mark" type="button" data-unit="calling" aria-pressed="false">ทำเครื่องหมายว่าเรียนบทนี้แล้ว</button></div>
+</section>
+
+<!-- 5 -->
+<section class="lesson stack" id="net">
+  <div class="sec-head"><span class="num">05</span><h2>ข่ายวิทยุ สถานีบังคับข่าย และขั้นตอนเปิด-ปิดข่าย</h2></div>
+  <div class="grid g2">
+    <div class="card"><h3>ข่ายบังคับ (Control net)</h3><p>ทุกสถานีต้องติดต่อผ่าน สบข. เท่านั้น ถ้าจะติดต่อกันเองต้องได้รับอนุญาตจาก สบข. ก่อน</p></div>
+    <div class="card"><h3>ข่ายอิสระ (Free net)</h3><p>ทุกสถานีในข่ายติดต่อกันได้โดยเสรี</p></div>
+  </div>
+  <div class="card"><h3>หน้าที่ของสถานีบังคับข่าย (สบข.)</h3>
+    <p class="muted" style="margin-bottom:8px">สบข. มีสิทธิ์เด็ดขาดในการควบคุมทางเทคนิค แต่ไม่ก้าวก่ายการใช้สถานีในทางยุทธวิธี</p>
+    <div class="grid g2"><ul class="clean">
+      <li>ปรับความถี่ให้ตรงกันทุกสถานี</li><li>อนุญาตให้สถานีเข้าหรือออกจากข่าย</li><li>เฝ้าฟังข่ายตลอดเวลา แก้ไขทันทีเมื่อมีผู้ฝ่าฝืน</li></ul>
+      <ul class="clean"><li>จัดลำดับการรับ-ส่งตามความเร่งด่วน</li><li>สั่งห้ามใช้และยกเลิกการห้ามใช้</li><li>รักษาวินัยของข่ายอย่างเคร่งครัด</li></ul></div>
+  </div>
+  <div class="steps">
+    <div class="card open"><h3>ขั้นตอนเปิดข่าย</h3>
+      <ol>
+        <li><div><strong>บอกเป็น สบข. และลูกข่ายขออนุญาตเข้าข่าย</strong><div class="say"><span class="t">ข้าพเจ้าเป็นสถานีบังคับข่าย เปลี่ยน</span><button class="play" type="button" data-say="ดอกไม้ จาก กุหลาบ ข้าพเจ้าเป็นสถานีบังคับข่าย เปลี่ยน">▶</button></div><div class="say"><span class="t">ข้าพเจ้าเป็นสถานีลูกข่าย เปลี่ยน</span><button class="play" type="button" data-say="กุหลาบ จาก จำปา ข้าพเจ้าเป็นสถานีลูกข่าย เปลี่ยน">▶</button></div></div></li>
+        <li><div><strong>รับรองฝ่าย</strong><div class="say"><span class="t">ข้าพเจ้า ขอตรวจสอบระบบรับรองฝ่าย ถาม…ตอบ… เปลี่ยน</span></div></div></li>
+        <li><div><strong>ทดสอบความแรงและความชัดเจน</strong><div class="say"><span class="t">ข้าพเจ้า ขอทราบความดัง ความชัดเจน เปลี่ยน</span><button class="play" type="button" data-say="ข้าพเจ้า ขอทราบความดัง ความชัดเจน เปลี่ยน">▶</button></div></div></li>
+        <li><div><strong>เทียบเวลาปัจจุบัน</strong><div class="say"><span class="t">จงเทียบเวลาปัจจุบัน ขณะนี้เป็นเวลา … เปลี่ยน</span><button class="play" type="button" data-say="จงเทียบเวลาปัจจุบัน ขณะนี้เป็นเวลา ศูนย์ เก้า หนึ่ง ห้า เปลี่ยน">▶</button></div></div></li>
+        <li><div><strong>บอกมีข่าว แล้วส่ง-รับข่าว</strong><div class="say"><span class="t">ข้าพเจ้า มีข่าว ๑ ฉบับ พร้อมรับหรือไม่ เปลี่ยน</span><button class="play" type="button" data-say="ข้าพเจ้า มีข่าว หนึ่ง ฉบับ พร้อมรับหรือไม่ เปลี่ยน">▶</button></div></div></li>
+      </ol></div>
+    <div class="card close"><h3>ขั้นตอนปิดข่าย</h3>
+      <ol>
+        <li><div><strong>เรียกลูกข่ายทั้งหมด</strong><div class="say"><span class="t">(นามข่าย) จาก (สบข.) เปลี่ยน</span><button class="play" type="button" data-say="ดอกไม้ จาก กุหลาบ เปลี่ยน">▶</button></div></div></li>
+        <li><div><strong>ตรวจสอบข่าวค้างรับ ค้างส่ง</strong><div class="say"><span class="t">ขอให้ทุกสถานีตรวจสอบข่าวค้างรับ ข่าวค้างส่งทุกฉบับ เปลี่ยน</span><button class="play" type="button" data-say="ขอให้ทุกสถานีตรวจสอบข่าวค้างรับ ข่าวค้างส่งทุกฉบับ เปลี่ยน">▶</button></div></div></li>
+        <li><div><strong>รับรองฝ่าย</strong><div class="say"><span class="t">ข้าพเจ้า ขอทราบระบบรับรองฝ่าย ถาม…ตอบ… เปลี่ยน</span></div></div></li>
+        <li><div><strong>นัดเวลาเปิดครั้งต่อไป และสั่งปิดสถานี</strong><div class="say"><span class="t">จงปิดสถานี จนถึงเวลา … เปลี่ยน</span><button class="play" type="button" data-say="ดอกไม้ จาก กุหลาบ จงปิดสถานี จนถึงเวลา หนึ่ง สาม ศูนย์ ศูนย์ เปลี่ยน">▶</button></div></div></li>
+      </ol></div>
+  </div>
+  <div class="grid g2">
+    <div class="card steps close" style="display:block"><h3>ห้ามใช้อย่างฉุกเฉิน <span class="en">SILENCE</span></h3>
+      <p class="muted" style="font-size:15px;margin-bottom:8px">ผู้สั่งได้คือสถานีที่ได้รับอนุมัติจากผู้มีอำนาจหน้าที่โดยตรงเท่านั้น (สบข.)</p>
+      <ol>
+        <li><div><strong>สบข. ตรวจสอบระบบรับรองฝ่ายก่อน</strong><div class="say"><span class="t">จำปา จาก กุหลาบ ข้าพเจ้า ขอตรวจสอบระบบรับรองฝ่าย ถาม (…) เปลี่ยน</span></div><div class="say"><span class="t">กุหลาบ จาก จำปา ตอบ (…) เปลี่ยน</span></div></div></li>
+        <li><div><strong>สบข. สั่งห้ามใช้ 3 ครั้ง</strong><div class="say"><span class="t">จาก กุหลาบ ห้ามใช้ ห้ามใช้ ห้ามใช้</span></div></div></li>
+        <li><div><strong>สถานีที่ถูกสั่ง</strong> หยุดส่งทันที ไม่ต้องตอบ และงดใช้วิทยุจนกว่าจะได้รับคำสั่งใหม่</div></li>
+      </ol>
+      <div class="toolbar" style="margin-top:10px"><button class="play" type="button" data-say="จำปา จาก กุหลาบ ข้าพเจ้า ขอตรวจสอบระบบรับรองฝ่าย ถาม รหัส เปลี่ยน|กุหลาบ จาก จำปา ตอบ รหัส เปลี่ยน|จาก กุหลาบ ห้ามใช้ ห้ามใช้ ห้ามใช้">▶ ฟังทั้งลำดับ</button></div></div>
+    <div class="card steps open" style="display:block"><h3>ยกเลิกการห้ามใช้ <span class="en">SILENCE LIFTED</span></h3>
+      <p class="muted" style="font-size:15px;margin-bottom:8px">เป็นหน้าที่ของสถานีที่สั่งห้าม (สบข.) เท่านั้น</p>
+      <ol>
+        <li><div><strong>สบข. ตรวจสอบระบบรับรองฝ่ายก่อน</strong><div class="say"><span class="t">จำปา จาก กุหลาบ ข้าพเจ้า ขอตรวจสอบระบบรับรองฝ่าย ถาม (…) เปลี่ยน</span></div><div class="say"><span class="t">กุหลาบ จาก จำปา ตอบ (…) เปลี่ยน</span></div></div></li>
+        <li><div><strong>สบข. สั่งเริ่มใช้ 3 ครั้ง</strong><div class="say"><span class="t">จาก กุหลาบ เริ่มใช้ เริ่มใช้ เริ่มใช้</span></div></div></li>
+        <li><div><strong>สถานีที่ถูกสั่ง</strong> กลับมาส่งได้ตามปกติ</div></li>
+      </ol>
+      <div class="toolbar" style="margin-top:10px"><button class="play" type="button" data-say="จำปา จาก กุหลาบ ข้าพเจ้า ขอตรวจสอบระบบรับรองฝ่าย ถาม รหัส เปลี่ยน|กุหลาบ จาก จำปา ตอบ รหัส เปลี่ยน|จาก กุหลาบ เริ่มใช้ เริ่มใช้ เริ่มใช้">▶ ฟังทั้งลำดับ</button></div></div>
+    <div class="callout" style="grid-column:1/-1">ระหว่างที่ห้ามใช้ ถ้า สบข. จะเรียกสถานีใด ต้องรับรองฝ่ายทุกครั้ง เพื่อยืนยันว่าคำสั่งมาจากฝ่ายเราจริง ไม่ใช่ข้าศึกแทรกเข้ามา</div>
+  </div>
+  <div class="done-row"><button class="mark" type="button" data-unit="net" aria-pressed="false">ทำเครื่องหมายว่าเรียนบทนี้แล้ว</button></div>
+</section>
+
+<!-- 6 -->
+<section class="lesson stack" id="messages">
+  <div class="sec-head"><span class="num">06</span><h2>ความเร่งด่วน โครงสร้างข่าว และแบบบันทึก</h2></div>
+  <h3>ลำดับความเร่งด่วน (จากสูงไปต่ำ)</h3>
+  <div class="prec">
+    <div class="p4"><b>ด่วนที่สุด</b><span>FLASH</span></div>
+    <div class="p3"><b>ด่วนมาก</b><span>EMERGENCY</span></div>
+    <div class="p2"><b>ด่วน</b><span>PRIORITY</span></div>
+    <div class="p1"><b>ปกติ</b><span>ROUTINE</span></div>
+  </div>
+  <div class="card"><h3>ระเบียบการส่งแทรก</h3>
+    <ul class="clean">
+      <li>ข่าวด่วนที่สุดหรือด่วนมาก ส่งแทรกได้ทันที</li>
+      <li>ข่าวด่วน ส่งแทรกได้เฉพาะเมื่อกำลังส่งข่าวปกติที่มีข้อความยาว</li>
+      <li>ข่าวปกติ ห้ามส่งแทรก</li>
+      <li>ระหว่างส่งข่าวทางยุทธวิธี ตามปกติไม่ใช้การส่งแทรก</li>
+    </ul></div>
+  <div class="grid g2">
+    <div class="card"><h3>ข่าว 1 ฉบับมี 3 ภาค</h3>
+      <ol style="margin:0;padding-left:22px"><li><strong>หัวข่าว</strong> ได้แก่ ความเร่งด่วน หมู่วันเวลา จาก ถึง ผู้รับทราบ หมู่คำ</li><li><strong>ข้อความข่าว</strong> ได้แก่ ชั้นความลับ ที่ของผู้ให้ข่าว และเนื้อข่าว</li><li><strong>ท้ายข่าว</strong> ส่วนปิดท้ายข่าว จบด้วย “เปลี่ยน” หรือ “เลิก”</li></ol></div>
+    <div class="card"><h3>ช่องในกระดาษเขียนข่าว (แบบ สส.๖)</h3>
+      <ul class="clean" style="font-size:15px">
+        <li>ความเร่งด่วน ผู้รับปฏิบัติ / ผู้รับทราบ</li><li>หมู่วันเวลา · จาก · ถึง ผู้รับปฏิบัติ · ผู้รับทราบ</li>
+        <li>หมู่คำ · ประเภทเอกสาร (ลับ / ลับมาก / ลับที่สุด)</li><li>ที่ของผู้ให้ข่าว · เนื้อข่าว (ข่าวฝึกให้คร่อมด้วยคำว่า “ฝึก” บนและล่าง)</li></ul></div>
+  </div>
+  <h3>แบบบันทึกของพนักงานวิทยุ</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>แบบ</th><th>ชื่อแบบ</th><th>ใช้บันทึก</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">ทบ.๔๖๓-๐๐๓</td><td>บันทึกการปฏิบัติงานของสถานีวิทยุ</td><td>เวลาเปิด-ปิดสถานี และผลัดพลวิทยุ</td></tr>
+      <tr><td class="mono">ทบ.๔๖๓-๐๓๕</td><td>บันทึกการรับ-ส่งข่าวของพนักงานวิทยุ</td><td>เลขข่าว (NR) หมู่วันเวลา และผู้รับ-ส่ง แยกตามสถานี</td></tr>
+      <tr><td class="mono">ทบ.๔๖๓-๐๓๖</td><td>บันทึกการเรียกขานของสถานีวิทยุ</td><td>การเรียกขานทุกครั้ง พร้อมเวลาและข้อความ</td></tr>
+      <tr><td class="mono">ทบ.๔๖๓-๐๓๗</td><td>บันทึกของพนักงานวิทยุ</td><td>เหตุการณ์ผิดปกติ เช่น ลงข่ายชั่วคราว</td></tr>
+      <tr><td class="mono">ทบ.๔๖๓-๐๐๗</td><td>กระดาษเขียนข่าว (แบบ สส.๖)</td><td>ร่างข่าวก่อนส่ง</td></tr>
+    </tbody></table></div>
+  <div class="card stack" style="gap:12px"><h3>แบบบันทึก พงว. ออนไลน์ (003–037) แยกตามที่บังคับการ</h3>
+    <div><p class="muted" style="font-size:14px">ทก.หลัก</p><div class="links">
+      <a href="https://docs.google.com/spreadsheets/d/1-7DmjZXzRkQ4pmDD53kdF_gaqj33Emgtc_GF2JmBSZg/edit">ข่ายบังคับบัญชา/ยุทธการ</a>
+      <a href="https://docs.google.com/spreadsheets/d/1dL1lBB-JZzebQYkGYtDntC7OuhiJtVwvcCpHAtoqaC4/edit">ข่าย ผบ.พล</a>
+      <a href="https://docs.google.com/spreadsheets/d/1C63oPbTdPwIAQNpVZgun4xhyWQmAdc-Y6xxKQyOhUBs/edit">ข่ายการข่าวกรอง</a>
+      <a href="https://docs.google.com/spreadsheets/d/1oOdNRjod_En6vYcwbfQkDQPXcdjwExPxyKiTd8FuHrg/edit">ข่ายธุรการ/ส่งกำลังบำรุงที่ 2</a></div></div>
+    <div><p class="muted" style="font-size:14px">ทก.หลัง</p><div class="links">
+      <a href="https://docs.google.com/spreadsheets/d/1LU4jLTrK_sJPP8dtIMCNIhYwKXbfCtjMsvSGUcL4bw8/edit">ข่ายบังคับบัญชา/ยุทธการ</a>
+      <a href="https://docs.google.com/spreadsheets/d/1V_DDBynhbY6He4WENyN-uqWMPRJWflGWRxZVpzA-i9g/edit">ข่าย ผบ.พล</a>
+      <a href="https://docs.google.com/spreadsheets/d/1O25UU5xSdh509u2Ik6kxN2bIsYzC-cnqrbXvBorhL6Y/edit">ข่ายการข่าวกรอง</a>
+      <a href="https://docs.google.com/spreadsheets/d/1fB-Y_g2Blyozay-RDiS70t_EjNd4sZLwfjGIf48TdU4/edit">ข่ายธุรการ/ส่งกำลังบำรุงที่ 2</a></div></div>
+    <div><p class="muted" style="font-size:14px">ทก.ยว.</p><div class="links">
+      <a href="https://docs.google.com/spreadsheets/d/1pH9GrQCVUy8EML0JhyOOz7EXjVQQFvGhCXXrDtMseUY/edit">ข่ายบังคับบัญชา/ยุทธการ</a>
+      <a href="https://docs.google.com/spreadsheets/d/1QgP1OyUIhZWuKoAM-dpcrnZvrwV1YOkXDfINmVPh01c/edit">ข่าย ผบ.พล</a>
+      <a href="https://docs.google.com/spreadsheets/d/1SfLhI15fL-FylOgK24lePfBsJQ2CAycCW2g2SqUAfLM/edit">ข่ายการข่าวกรอง</a>
+      <a href="https://docs.google.com/spreadsheets/d/1l9Q8gzoRysYS7MVEFWVa1Oc8D0fquwSC9ZJ7l2cu3Cc/edit">ข่ายธุรการ/ส่งกำลังบำรุงที่ 2</a></div></div>
+  </div>
+  <div class="done-row"><button class="mark" type="button" data-unit="messages" aria-pressed="false">ทำเครื่องหมายว่าเรียนบทนี้แล้ว</button></div>
+</section>
+
+<!-- 7 -->
+<section class="lesson stack" id="security">
+  <div class="sec-head"><span class="num">07</span><h2>การรักษาความปลอดภัยและข่ายวิทยุในกองพล</h2></div>
+  <div class="grid g2">
+    <div class="card"><h3>ข่าวธรรมดา <span class="en">PLAIN / IN CLEAR</span></h3><p>ข้อความที่คนทั่วไปอ่านแล้วเข้าใจ ไม่มีความหมายซ่อนอยู่</p></div>
+    <div class="card"><h3>ข่าวอักษรลับ</h3><p>ข้อความที่อ่านแล้วไม่ได้ใจความ แต่มีความหมายซ่อนอยู่ ข่าวที่มีชั้นความลับต้องเข้ารหัสทุกครั้ง</p></div>
+  </div>
+  <h3>คุณลักษณะของระบบอักษรลับที่ดี</h3>
+  <div class="grid g3">
+    <div class="card pillar"><h3>มั่นคง <span class="en">SECURITY</span></h3><p>ข้าศึกวิเคราะห์ไม่ออก หรือใช้เวลานานจนข่าวหมดประโยชน์</p></div>
+    <div class="card pillar"><h3>เชื่อถือได้ <span class="en">RELIABILITY</span></h3><p>เข้า-ถอดไม่ผิดเพี้ยน แม้ข้อความขาดบางตอนก็ยังถอดส่วนที่เหลือได้</p></div>
+    <div class="card pillar"><h3>อ่อนตัว <span class="en">FLEXIBILITY</span></h3><p>เปลี่ยนกุญแจได้หลายแบบ และใช้ได้เกือบทุกสถานการณ์</p></div>
+    <div class="card pillar"><h3>รวดเร็ว <span class="en">SPEED</span></h3><p>เข้า-ถอดได้เร็ว ใช้ในสถานการณ์เร่งด่วนได้</p></div>
+    <div class="card pillar"><h3>ประหยัด <span class="en">ECONOMY</span></h3><p>ไม่สิ้นเปลืองค่าใช้จ่าย และข่าวที่เข้ารหัสแล้วส่งได้ไม่สิ้นเปลือง</p></div>
+  </div>
+  <div class="card"><h3>รหัส <span class="en">CIPHER</span></h3>
+    <p>แปลงหรือสลับตัวอักษรของข่าวด้วยการเปลี่ยนที่ เปลี่ยนแทน หรือผสมทั้งสองวิธีอย่างมีระเบียบ แบ่งเป็น 2 แบบ</p>
+    <div class="grid g2" style="margin-top:10px">
+      <div class="say" style="display:block"><strong>ในวงจร (ONLINE)</strong> ต่อเครื่องรหัสเข้ากับวงจรสื่อสารโดยตรง พนักงานต้นทางและปลายทางไม่ต้องเข้า-ถอดเอง</div>
+      <div class="say" style="display:block"><strong>นอกวงจร (OFFLINE)</strong> พนักงานตอนการอักษรลับเป็นผู้เข้า-ถอดรหัสเอง</div>
+    </div></div>
+  <h3>ข่ายวิทยุในกองพล</h3>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>#</th><th>ข่าย</th><th>ระบบ</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">1</td><td>ข่ายบังคับบัญชา/ยุทธการกองพล</td><td>ปส./คม.</td></tr>
+      <tr><td class="mono">2</td><td>ข่าย ผบ.พล/บังคับบัญชากองพล</td><td>ปถ.คำพูด</td></tr>
+      <tr><td class="mono">3</td><td>ข่ายการข่าวกรองของกองพล</td><td>ปส./คม.</td></tr>
+      <tr><td class="mono">4</td><td>ข่ายธุรการ/ส่งกำลังบำรุงที่ 1 กองพล</td><td>ปส./คม.</td></tr>
+      <tr><td class="mono">5</td><td>ข่ายธุรการ/ส่งกำลังบำรุงที่ 2 กองพล</td><td>ปถ.คำพูด</td></tr>
+      <tr><td class="mono">6</td><td>ข่ายคำขอทางอากาศกองพล</td><td>ปส.คำพูด/คม.</td></tr>
+      <tr><td class="mono">7</td><td>ข่ายลาดตระเวนกองพล</td><td>ปถ.คำพูด</td></tr>
+      <tr><td class="mono">8</td><td>ข่ายเตือนภัย/กระจายข่าวกองพล</td><td>ปส.คำพูด</td></tr>
+    </tbody></table></div>
+  <p class="muted" style="font-size:15px">ข่ายนอกกองพล ได้แก่ ข่ายคำขอทางอากาศ ทภ., ข่ายส่งกำลังบำรุงกองทัพภาค, ข่ายบังคับบัญชากองทัพภาค (ปส.วทพ.) และระบบเครื่องรับรายงานขณะปฏิบัติ (ถสม./ถสอ.คำพูด)</p>
+  <div class="done-row"><button class="mark" type="button" data-unit="security" aria-pressed="false">ทำเครื่องหมายว่าเรียนบทนี้แล้ว</button></div>
+</section>
+
+<!-- 8 -->
+<section class="lesson stack" id="missions">
+  <div class="sec-head"><span class="num">08</span><h2>ภารกิจจำลอง</h2></div>
+  <p class="prose muted">ข่าย <strong>ดอกไม้</strong> · สบข. <strong>กุหลาบ</strong> · ลูกข่าย <strong>จำปา จำปี จำปูน</strong> กด ▶ เพื่อฟังทางวิทยุ แล้วเลือกสิ่งที่ถูกต้อง ทำภารกิจครบโดยไม่ผิดเลยจะได้ 3 ดาว</p>
+  <div class="tabs" role="tablist" id="mTabs"></div>
+  <div class="card stack" id="mBox">
+    <div class="progress" aria-hidden="true"><i id="mBar" style="width:0%"></i></div>
+    <div id="mStage"></div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="lesson stack" id="quiz">
+  <div class="sec-head"><span class="num">09</span><h2>แบบทดสอบท้ายบทและใบรายงานผล</h2></div>
+  <p class="prose muted">ระบบสุ่ม 12 ข้อจากคลังข้อสอบ 21 ข้อ เกณฑ์ผ่านคือ 80% (10 ข้อ) ทำเสร็จแล้วจะได้ใบรายงานผลที่เทียบคะแนนก่อนเรียนกับหลังเรียน พร้อมรหัสยืนยัน แล้วกด “ส่งผลหลังเรียนให้ครู” เพื่อส่งเข้าแบบฟอร์มของครู</p>
+  <div class="card stack" id="qBox"></div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="qr" aria-label="QR code ลิงก์บทเรียนนี้">{{QR}}</div>
+    <div class="stack" style="gap:8px;flex:1;min-width:240px">
+      <p>สแกนเพื่อเปิดบทเรียนนี้บนมือถือ</p>
+      <p>ลิขสิทธิ์ทางวิชาการ โดย วสว.กศ.รร.ส.สส. · เรียบเรียงจากเอกสาร “ระเบียบการวิทยุโทรศัพท์” และแผ่นป้ายขั้นตอนการเปิด-ปิดข่าย</p>
+      <details class="teacher"><summary>สำหรับครู: ตรวจรหัสยืนยันใบรายงานผล</summary>
+        <div class="stack" style="gap:8px;margin-top:10px">
+          <label for="vText" style="font-size:14px">วางข้อความใบรายงานผลที่นักเรียนส่งมา</label>
+          <textarea id="vText" rows="6"></textarea>
+          <div class="toolbar"><button class="btn" type="button" id="vBtn">ตรวจสอบ</button><span id="vOut" aria-live="polite"></span></div>
+        </div>
+      </details>
+    </div>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");}
+  function toast(m){var t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(toast.h);toast.h=setTimeout(function(){t.classList.remove("show")},1800);}
+  var store={get:function(k,d){try{var v=localStorage.getItem("rtp_"+k);return v?JSON.parse(v):d}catch(e){return d}},set:function(k,v){try{localStorage.setItem("rtp_"+k,JSON.stringify(v))}catch(e){}}};
+  var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- radio audio ---------- */
+  var actx=null,talking=false;
+  function ctx(){try{if(!actx){var A=window.AudioContext||window.webkitAudioContext;if(A)actx=new A();}if(actx&&actx.state==="suspended")actx.resume();}catch(e){actx=null}return actx;}
+  function squelch(ms){
+    var c=ctx();if(!c)return;
+    try{
+      var len=Math.floor(c.sampleRate*ms/1000),buf=c.createBuffer(1,len,c.sampleRate),d=buf.getChannelData(0);
+      for(var i=0;i<len;i++)d[i]=(Math.random()*2-1)*(1-i/len);
+      var src=c.createBufferSource();src.buffer=buf;
+      var bp=c.createBiquadFilter();bp.type="bandpass";bp.frequency.value=1800;bp.Q.value=.7;
+      var g=c.createGain();g.gain.value=.18;src.connect(bp);bp.connect(g);g.connect(c.destination);src.start();
+      var o=c.createOscillator(),og=c.createGain();o.frequency.value=1250;og.gain.value=.05;o.connect(og);og.connect(c.destination);
+      o.start(c.currentTime+ms/1000);o.stop(c.currentTime+ms/1000+.06);
+    }catch(e){}
+  }
+  var thVoice=null;
+  /* Thai voice: match th-TH / th_TH / name "Thai"; prefer natural/online voices (e.g. Edge's Premwadee/Niwat) */
+  function pickVoice(){try{var vs=speechSynthesis.getVoices().filter(function(v){return /^th([-_]|$)/i.test(v.lang)||/thai|ไทย/i.test(v.name)});
+    vs.sort(function(a,b){return (/natural|online|premium|enhanced/i.test(b.name)?1:0)-(/natural|online|premium|enhanced/i.test(a.name)?1:0)});
+    thVoice=vs[0]||null;}catch(e){}}
+  try{pickVoice();speechSynthesis.onvoiceschanged=pickVoice;}catch(e){}
+  var rate=store.get("rate",.7);
+  var hasTTS=false;try{hasTTS=("speechSynthesis" in window)&&typeof SpeechSynthesisUtterance!=="undefined";}catch(e){}
+  function noVoice(msg){
+    var n=$("audioNote");if(n){n.hidden=false;n.querySelector("span").textContent=msg;}
+    toast("ไม่มีเสียง: ดูวิธีแก้ที่แถบสีส้มด้านบน");
+  }
+  /* speak() must run synchronously inside the click: iOS Safari and Chrome drop speech started from a timer */
+  function say(text,lang,done){
+    squelch(120);
+    if(!hasTTS){noVoice("เบราว์เซอร์หรือแอปนี้ไม่มีระบบอ่านออกเสียง ให้เปิดลิงก์ใน Chrome หรือ Safari โดยตรง");done&&done();return;}
+    try{
+      if(!thVoice)pickVoice();
+      speechSynthesis.cancel();
+      var u=new SpeechSynthesisUtterance(lang?text:text.replace(/\s+/g,", "));u.lang=lang||"th-TH";u.rate=lang?Math.min(rate,.8):rate;u.volume=1;
+      if(!lang&&thVoice)u.voice=thVoice;
+      var started=false;talking=true;
+      u.onstart=function(){started=true;};
+      u.onend=function(){squelch(80);talking=false;done&&done();};
+      u.onerror=function(ev){talking=false;done&&done();if(ev&&ev.error!=="interrupted"&&ev.error!=="canceled")noVoice("เครื่องนี้อ่านออกเสียงไม่สำเร็จ ("+ev.error+") ลองเปิดใน Chrome หรือ Safari และเปิดเสียงเครื่อง");};
+      speechSynthesis.speak(u);
+      if(speechSynthesis.paused)speechSynthesis.resume();
+      setTimeout(function(){
+        if(!started&&!speechSynthesis.speaking){talking=false;done&&done();
+          noVoice(!lang&&!thVoice?"เครื่องนี้ยังไม่มีเสียงภาษาไทย ให้ติดตั้งเสียงภาษาไทยในการตั้งค่า Text-to-Speech หรือเปิดลิงก์ใน Chrome/Safari":"เบราว์เซอร์ไม่ยอมเล่นเสียงในหน้านี้ ให้เปิดลิงก์ใน Chrome หรือ Safari โดยตรง และปิดโหมดเงียบ");}
+      },2500);
+    }catch(e){talking=false;done&&done();noVoice("เบราว์เซอร์ไม่ยอมเล่นเสียงในหน้านี้ ให้เปิดลิงก์ใน Chrome หรือ Safari โดยตรง");}
+  }
+  document.addEventListener("click",function(e){
+    var b=e.target.closest(".play");if(!b)return;
+    document.querySelectorAll(".play.on").forEach(function(x){x.classList.remove("on")});
+    b.classList.add("on");
+    var parts=b.dataset.say.split("|"),k=0;
+    (function next(){ if(k>=parts.length||!b.classList.contains("on")){b.classList.remove("on");return;} say(parts[k++],b.dataset.lang,function(){setTimeout(next,450);}); })();
+  });
+
+  /* ---------- hero waveform + clock ---------- */
+  (function(){
+    var cv=$("wave"),g=cv.getContext("2d"),t=0;
+    var col=getComputedStyle(document.documentElement).getPropertyValue("--phosphor").trim()||"#ffb547";
+    function draw(){
+      var w=cv.width,h=cv.height;g.clearRect(0,0,w,h);
+      g.strokeStyle="rgba(255,181,71,.12)";g.lineWidth=1;
+      for(var x=0;x<w;x+=40){g.beginPath();g.moveTo(x,0);g.lineTo(x,h);g.stroke();}
+      g.beginPath();g.moveTo(0,h/2);g.lineTo(w,h/2);g.stroke();
+      g.strokeStyle=col;g.lineWidth=2.5;g.shadowColor=col;g.shadowBlur=8;g.beginPath();
+      var amp=talking?.42:.12;
+      for(var x2=0;x2<=w;x2+=3){
+        var y=h/2+Math.sin(x2*.035+t)*h*amp*Math.sin(x2*.006+t*.3)+(talking?(Math.random()-.5)*h*.25:0);
+        if(x2===0)g.moveTo(x2,y);else g.lineTo(x2,y);
+      }
+      g.stroke();g.shadowBlur=0;t+=.06;
+      if(!reduce)requestAnimationFrame(draw);
+    }
+    draw();if(reduce)setInterval(draw,500);
+    function clk(){var d=new Date();$("clock").textContent=("0"+d.getHours()).slice(-2)+("0"+d.getMinutes()).slice(-2)+" น.";}
+    clk();setInterval(clk,15000);
+  })();
+
+  /* ---------- progress ---------- */
+  var UNITS=["pretest","principles","phonetic","prowords","calling","net","messages","security","missions","quiz"];
+  var done=store.get("done",{});
+  function renderProg(){
+    var n=UNITS.filter(function(u){return done[u]}).length;
+    $("progBar").style.width=(n/UNITS.length*100)+"%";$("progTxt").textContent=n+"/10 ขั้น";
+    document.querySelectorAll("nav.lessons a").forEach(function(a){a.classList.toggle("done",!!done[a.dataset.u])});
+    document.querySelectorAll(".mark").forEach(function(b){var on=!!done[b.dataset.unit];b.setAttribute("aria-pressed",on);b.textContent=on?"เรียนบทนี้แล้ว ✓":"ทำเครื่องหมายว่าเรียนบทนี้แล้ว";});
+  }
+  function setDone(u,v){done[u]=v;store.set("done",done);renderProg();}
+  document.querySelectorAll(".mark").forEach(function(b){b.onclick=function(){setDone(b.dataset.unit,!done[b.dataset.unit]);if(done[b.dataset.unit])toast("บันทึกความคืบหน้าแล้ว");}});
+  renderProg();
+
+  /* ---------- speech rate ---------- */
+  function renderRate(){document.querySelectorAll("#rateSeg button").forEach(function(b){b.setAttribute("aria-pressed",Math.abs(+b.dataset.r-rate)<.01)});}
+  document.querySelectorAll("#rateSeg button").forEach(function(b){b.onclick=function(){rate=+b.dataset.r;store.set("rate",rate);renderRate();say("ทดสอบ ความเร็ว เสียงอ่าน เปลี่ยน");}});
+  renderRate();
+
+  /* ---------- DTG drill ---------- */
+  var TD="๐๑๒๓๔๕๖๗๘๙",RD=["ศูนย์","หนึ่ง","โท","สาม-หาม","สี่","ห้า","หก","เจ็ด","แปด","เก้า"];
+  var dtg="210630",streak=0;
+  function pad(n){return("0"+n).slice(-2)}
+  function th(s){return s.replace(/\d/g,function(c){return TD[c]})}
+  function readOut(s){return s.split("").map(function(c){return RD[c]}).join(" ")}
+  function newDtg(){dtg=pad(1+Math.floor(Math.random()*28))+pad(Math.floor(Math.random()*24))+pad(Math.floor(Math.random()*12)*5);$("dtgNum").textContent=th(dtg);$("dtgAns").textContent="";}
+  $("dtgShow").onclick=function(){$("dtgAns").innerHTML=esc(readOut(dtg))+'<div class="muted" style="font-size:15px">วันที่ '+th(dtg.slice(0,2))+' เวลา '+th(dtg.slice(2))+' น.</div>';};
+  $("dtgPlay").onclick=function(){say(readOut(dtg).replace(/-/g," "));};
+  $("dtgNew").onclick=function(){newDtg();};
+  $("dtgOk").onclick=function(){streak++;$("dtgStreak").textContent="ถูกต่อเนื่อง "+streak+" ครั้ง";if(streak%5===0)toast("ยอดเยี่ยม อ่านถูกต่อเนื่อง "+streak+" ครั้ง");newDtg();};
+  $("dtgNew").addEventListener("click",function(){});
+  $("dtgNum").textContent=th(dtg);
+
+  /* ---------- phonetic ---------- */
+  var PH=[["A","ALFA","AL-FAH"],["B","BRAVO","BRAH-VOH"],["C","CHARLIE","CHAR-LEE"],["D","DELTA","DELL-TAH"],["E","ECHO","ECK-OH"],["F","FOXTROT","FOKS-TROT"],["G","GOLF","GOLF"],["H","HOTEL","HOH-TELL"],["I","INDIA","IN-DEE-AH"],["J","JULIETT","JEW-LEE-ETT"],["K","KILO","KEY-LOH"],["L","LIMA","LEE-MAH"],["M","MIKE","MIKE"],["N","NOVEMBER","NO-VEM-BER"],["O","OSCAR","OSS-CAH"],["P","PAPA","PAH-PAH"],["Q","QUEBEC","KEH-BECK"],["R","ROMEO","ROW-ME-OH"],["S","SIERRA","SEE-AIR-RAH"],["T","TANGO","TANG-GO"],["U","UNIFORM","YOU-NEE-FORM"],["V","VICTOR","VIK-TAH"],["W","WHISKEY","WISS-KEY"],["X","X-RAY","ECKS-RAY"],["Y","YANKEE","YANG-KEY"],["Z","ZULU","ZOO-LOO"]];
+  PH.forEach(function(r){
+    var b=document.createElement("button");b.type="button";b.className="";
+    b.setAttribute("aria-label","ฟังเสียง "+r[1]);
+    b.innerHTML='<span class="l">'+r[0]+'</span><span class="w">'+r[1]+'</span><span class="p">'+r[2]+'</span>';
+    b.onclick=function(){say(r[1],"en-US")};
+    $("phon").appendChild(b);
+  });
+
+  /* ---------- prowords ---------- */
+  var PW=[["ALL AFTER","ทั้งหมดหลังคำว่า"],["ALL BEFORE","ทั้งหมดก่อนคำว่า"],["BREAK","แยกภาค"],["CORRECTION","ผิด-ขอแก้"],["DISREGARD THIS","ยกเลิกข่าวนี้"],["DO NOT ANSWER","ไม่ต้องตอบ"],["EMERGENCY","ด่วนมาก"],["EXECUTE","ปฏิบัติ"],["EXECUTE TO FOLLOW","เตรียมปฏิบัติการ"],["EXEMPT","ยกเว้น"],["FIGURES","ตัวเลข"],["FLASH","ด่วนที่สุด"],["FROM","จาก"],["GROUPS","หมู่คำ"],["GROUP NO COUNT","ไม่นับหมู่คำ"],["INFO","ผู้รับทราบ"],["I READ BACK","จะอ่านทวน"],["I SAY AGAIN","จะส่งซ้ำ"],["I SPELL","สะกดตัว"],["I VERIFY","ยืนยัน"],["OUT","เลิก (จบ ไม่ต้องตอบ)"],["OVER","เปลี่ยน (ให้อีกฝ่ายตอบ)"],["PRIORITY","ด่วน"],["READ BACK","จงอ่านทวน"],["RELAY TO","ส่งต่อ (ไปยัง)"],["ROGER","ทราบ"],["ROUTINE","ปกติ"],["SAY AGAIN","จงส่งซ้ำ"],["SILENCE","ห้ามใช้"],["SILENCE LIFTED","เริ่มใช้"],["SPEAK SLOWER","พูดช้า ๆ"],["THAT IS CORRECT","ถูกต้อง"],["TO","ถึง"],["UNKNOWN STATION","สถานีที่ไม่รู้จัก"],["VERIFY","จงยืนยัน"],["WAIT","คอยก่อน"],["WAIT OUT","คอยนาน"],["WILCO","รับปฏิบัติตาม (รวม “ทราบ” แล้ว)"],["WORD AFTER","คำหลังคำว่า"],["WORD BEFORE","คำก่อนคำว่า"],["WORDS TWICE","ซ้ำสองครั้ง"],["WRONG","ผิด"]];
+  function renderList(){
+    var q=$("pwSearch").value.trim().toLowerCase(),html="",n=0;
+    PW.forEach(function(r){if(!q||r[0].toLowerCase().indexOf(q)>-1||r[1].indexOf(q)>-1){n++;html+='<tr><td class="mono">'+r[0]+'</td><td>'+r[1]+'</td></tr>';}});
+    $("pwBody").innerHTML=n?html:'<tr><td colspan="2" class="muted">ไม่พบคำนี้ ลองพิมพ์คำอื่น</td></tr>';
+  }
+  $("pwSearch").addEventListener("input",renderList);renderList();
+  function setMode(c){$("modeList").setAttribute("aria-pressed",!c);$("modeCard").setAttribute("aria-pressed",c);$("pwList").hidden=c;$("pwCard").hidden=!c;$("pwSearch").disabled=c;if(c)showCard();}
+  $("modeList").onclick=function(){setMode(false)};$("modeCard").onclick=function(){setMode(true)};
+  function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  var deck=shuffle(PW),ci=0,flipped=false;
+  function showCard(){flipped=false;$("fFront").textContent=deck[ci][0];$("fBack").textContent=deck[ci][1];$("fBack").hidden=true;$("fHint").textContent="แตะเพื่อดูความหมาย";$("fCount").textContent=(ci+1)+" / "+deck.length;}
+  function flip(){flipped=!flipped;$("fBack").hidden=!flipped;$("fHint").textContent=flipped?"แตะเพื่อซ่อน":"แตะเพื่อดูความหมาย";if(flipped)say(deck[ci][0],"en-US");}
+  $("flash").onclick=flip;$("flash").onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();flip();}};
+  $("fNext").onclick=function(){ci=(ci+1)%deck.length;showCard();};
+  $("fPrev").onclick=function(){ci=(ci-1+deck.length)%deck.length;showCard();};
+
+  /* ---------- question runner (index 0 of o[] is always correct; shown shuffled) ---------- */
+  function runner(stage,bar,items,head,onDone){
+    var i=0,score=0,res=[];
+    function show(){
+      bar&&(bar.style.width=(i/items.length*100)+"%");
+      if(i>=items.length){onDone(score,items.length,function(){i=0;score=0;res=[];show();},res);return;}
+      var it=items[i],h=head(it,i,items.length)+'<div class="opts">';
+      shuffle(it.o.map(function(_,k){return k})).forEach(function(k){h+='<button type="button" class="opt" data-k="'+k+'">'+esc(it.o[k])+'</button>';});
+      stage.innerHTML=h+'</div><div class="fb" aria-live="polite"></div>';
+      var answered=false,fb=stage.querySelector(".fb");
+      stage.querySelectorAll(".opt").forEach(function(b){b.onclick=function(){
+        if(answered)return;answered=true;var ok=+b.dataset.k===0;if(ok)score++;res[i]=ok;
+        stage.querySelectorAll(".opt").forEach(function(x){x.setAttribute("aria-disabled","true");if(+x.dataset.k===0)x.classList.add("right");});
+        if(!ok)b.classList.add("wrong");
+        fb.className="fb "+(ok?"ok":"no");
+        fb.innerHTML=(ok?"ถูกต้อง ":"ยังไม่ถูก ")+esc(it.why)+'<div class="toolbar" style="margin-top:10px"><button class="btn primary" type="button">'+(i+1<items.length?"ถัดไป ›":"ดูผล")+'</button></div>';
+        var nb=fb.querySelector("button");nb.onclick=function(){i++;show();};nb.focus();
+      };});
+    }
+    show();
+  }
+
+  /* ---------- missions ---------- */
+  var MISSIONS=[
+    {id:"open",name:"ภารกิจ 1 · เปิดข่าย",role:"ท่านคือลูกข่าย จำปา",items:[
+      {who:"กุหลาบ (สบข.)",q:"ดอกไม้ จาก กุหลาบ ข้าพเจ้าเป็นสถานีบังคับข่าย เปลี่ยน",ask:"ท่าน (จำปา) ตอบว่าอย่างไร",
+       o:["กุหลาบ จาก จำปา ข้าพเจ้าเป็นสถานีลูกข่าย เปลี่ยน","รับทราบครับ เปลี่ยนและเลิก","จำปา ทราบ รับปฏิบัติตาม เปลี่ยน"],
+       why:"ครั้งแรกให้ตอบแบบธรรมดา (ชื่อผู้เรียก จาก ชื่อตัวเอง) แล้วแจ้งว่าเป็นสถานีลูกข่าย ส่วน “เปลี่ยนและเลิก” ขัดกันเอง"},
+      {who:"กุหลาบ (สบข.)",q:"จำปา จาก กุหลาบ ข้าพเจ้าขอตรวจสอบระบบรับรองฝ่าย ถาม (ตามเอกสาร) เปลี่ยน",ask:"ท่านตอบว่าอย่างไร",
+       o:["จาก จำปา ตอบ (ตามเอกสารรับรองฝ่าย) เปลี่ยน","ข้าพเจ้าคือ ส.อ.ไก่ ประจำสถานีจำปา เปลี่ยน","ขอข้ามการรับรองฝ่ายไปก่อน เปลี่ยน"],
+       why:"ตอบด้วยรหัสตามเอกสารรับรองฝ่าย ห้ามส่งชื่อพนักงาน และการเปิดข่ายครั้งแรกต้องรับรองฝ่ายเสมอ"},
+      {who:"กุหลาบ (สบข.)",q:"จำปา จาก กุหลาบ ข้าพเจ้าขอทราบความดัง ความชัดเจน เปลี่ยน",ask:"ท่านได้ยินเสียงดังและอ่านได้ดี ควรตอบว่า",
+       o:["จาก จำปา ดังดี ชัดเจนดี เปลี่ยน","ได้ยินชัดแจ๋วเลยครับ เปลี่ยน","ROGER WILCO เปลี่ยน"],
+       why:"รายงานด้วยระดับมาตรฐาน ได้แก่ ความดัง (GOOD = ดังดี) และความชัดเจน (GOOD = ดี) ไม่ใช้ภาษาพูดหรือภาษาแสลง"},
+      {who:"กุหลาบ (สบข.)",q:"ดอกไม้ จาก กุหลาบ จงเทียบเวลาปัจจุบัน ขณะนี้เป็นเวลา ศูนย์ เก้า หนึ่ง ห้า เปลี่ยน",ask:"เวลา ๐๙๑๕ ต้องอ่านออกเสียงอย่างไร",
+       o:["ศูนย์ เก้า หนึ่ง ห้า","เก้าโมงสิบห้านาที","ศูนย์เก้าร้อยสิบห้า"],
+       why:"เวลาและหมู่วันเวลาต้องอ่านเป็นรายตัวเสมอ ไม่มีข้อยกเว้น"},
+      {who:"สถานการณ์",q:"ท่านมีข่าวปกติ 1 ฉบับจะส่งให้ สบข. และข่ายว่างอยู่",ask:"ท่านเรียกว่าอย่างไร",silent:true,
+       o:["กุหลาบ จาก จำปา ข้าพเจ้า มีข่าว ๑ ฉบับ พร้อมรับหรือไม่ เปลี่ยน","กุหลาบ มีข่าวนะ ส่งเลยนะครับ","กุหลาบ จาก จำปา ข้าพเจ้ามีข่าว ๑ ฉบับ เลิก"],
+       why:"ต้องถามความพร้อมของผู้รับก่อนส่ง และลงท้ายด้วย “เปลี่ยน” เพราะต้องการคำตอบ"},
+      {who:"กุหลาบ (สบข.)",q:"จำปา จาก กุหลาบ ข่าวของท่าน ข้าพเจ้าทราบแล้ว …",ask:"สบข. ควรลงท้ายด้วยคำใด เมื่อไม่ต้องการให้ตอบอีก",
+       o:["เลิก","เปลี่ยนและเลิก","เปลี่ยน"],
+       why:"“เลิก” (OUT) ใช้จบการส่งโดยไม่ต้องการคำตอบ ห้ามใช้คู่กับ “เปลี่ยน”"}]},
+    {id:"close",name:"ภารกิจ 2 · ปิดข่าย",role:"ท่านคือ สบข. กุหลาบ",items:[
+      {who:"สถานการณ์",q:"ได้เวลาปิดข่ายตามคำสั่ง ลูกข่ายทุกสถานียังเฝ้าฟังอยู่",ask:"ขั้นแรก ท่านพูดว่าอย่างไร",silent:true,
+       o:["ดอกไม้ จาก กุหลาบ เปลี่ยน","ทุกคนปิดเครื่องได้เลยครับ","จำปา จำปี จำปูน เลิก"],
+       why:"ขั้นแรกของการปิดข่ายคือเรียกลูกข่ายทั้งหมดด้วยนามข่าย (นามรวม)"},
+      {who:"สถานการณ์",q:"ลูกข่ายตอบครบทุกสถานีแล้ว",ask:"ขั้นต่อไป ท่านพูดว่าอย่างไร",silent:true,
+       o:["ขอให้ทุกสถานีตรวจสอบข่าวค้างรับ ข่าวค้างส่งทุกฉบับ เปลี่ยน","จงเทียบเวลาปัจจุบัน เปลี่ยน","ข้าพเจ้าเป็นสถานีบังคับข่าย เปลี่ยน"],
+       why:"ต้องตรวจข่าวค้างก่อนปิด เพื่อไม่ให้มีข่าวตกค้าง"},
+      {who:"จำปา",q:"กุหลาบ จาก จำปา มีข่าวค้างส่ง หนึ่ง ฉบับ เปลี่ยน",ask:"ท่านควรทำอย่างไร",
+       o:["ให้จำปาส่งข่าวค้างให้เสร็จก่อน แล้วจึงปิดข่าย","ปิดข่ายทันทีตามเวลา","ให้จำปาเก็บไว้ส่งพรุ่งนี้"],
+       why:"หลักความรวดเร็วกำหนดว่าห้ามมีข่าวตกค้าง ต้องระบายข่าวให้หมดก่อนปิดข่าย"},
+      {who:"สถานการณ์",q:"ไม่มีข่าวค้างแล้ว",ask:"ก่อนสั่งปิดสถานี ต้องทำอะไร",silent:true,
+       o:["ใช้ระบบรับรองฝ่าย ถาม-ตอบ","ทดสอบความดัง ความชัดเจน","สะกดตัวนามข่าย"],
+       why:"ขั้นตอนปิดข่ายต้องรับรองฝ่ายก่อนสั่งปิด เพื่อยืนยันว่าคำสั่งมาจากฝ่ายเราจริง"},
+      {who:"สถานการณ์",q:"ข่ายจะเปิดอีกครั้งเวลา ๑๓๐๐",ask:"ท่านสั่งปิดสถานีว่าอย่างไร",silent:true,
+       o:["ดอกไม้ จาก กุหลาบ จงปิดสถานี จนถึงเวลา หนึ่ง สาม ศูนย์ ศูนย์ เปลี่ยน","ดอกไม้ ปิดสถานี บ่ายโมงเจอกัน เปลี่ยนและเลิก","ปิดได้แล้ว เลิก"],
+       why:"สั่งปิดพร้อมนัดเวลาเปิดครั้งต่อไป อ่านเวลาเป็นรายตัว และไม่ใช้ “เปลี่ยนและเลิก”"}]},
+    {id:"special",name:"ภารกิจ 3 · สถานการณ์พิเศษ",role:"ท่านคือลูกข่าย จำปี",items:[
+      {who:"สถานการณ์",q:"จำปากำลังส่งข่าวปกติฉบับยาว ส่วนท่านมีข่าว ด่วนที่สุด",ask:"ท่านทำอย่างไร",silent:true,
+       o:["ส่งแทรกได้ทันที","รอให้จำปาส่งจบก่อน","ขออนุญาตจำปาก่อนแทรก"],
+       why:"ข่าวด่วนที่สุดหรือด่วนมากส่งแทรกได้ทันที"},
+      {who:"สถานการณ์",q:"จำปูนกำลังส่งข่าวด่วน ส่วนท่านมีข่าวปกติ",ask:"ท่านทำอย่างไร",silent:true,
+       o:["รอ เพราะข่าวปกติห้ามส่งแทรก","ส่งแทรกได้ เพราะข่าวสั้น","ส่งพร้อมกันได้"],
+       why:"ข่าวปกติห้ามใช้ระเบียบการส่งแทรก"},
+      {who:"กุหลาบ (สบข.)",q:"จำปี จาก กุหลาบ ข้าพเจ้า ขอตรวจสอบระบบรับรองฝ่าย ถาม (…) เปลี่ยน",ask:"ท่านทำอย่างไร",
+       o:["ตอบรหัสรับรองฝ่ายตามเอกสาร: กุหลาบ จาก จำปี ตอบ (…) เปลี่ยน","ไม่ตอบ เพราะกำลังส่งข่าวอยู่","ตอบว่า จำปี ทราบ เลิก"],
+       why:"ก่อนสั่งห้ามใช้หรือยกเลิกการห้ามใช้ สบข. ต้องรับรองฝ่ายก่อนเสมอ ลูกข่ายต้องตอบรหัสให้ถูก"},
+      {who:"กุหลาบ (สบข.)",q:"จาก กุหลาบ ห้ามใช้ ห้ามใช้ ห้ามใช้",ask:"ท่านทำอย่างไร",
+       o:["หยุดส่งทันที และไม่ต้องตอบ","ตอบว่า ทราบ เลิก","ส่งข่าวที่ค้างให้จบก่อน"],
+       why:"เมื่อได้ยิน “ห้ามใช้” 3 ครั้ง ต้องหยุดส่งทันที ไม่ต้องตอบ และงดใช้วิทยุ"},
+      {who:"สถานการณ์",q:"ผ่านไป 20 นาที ท่านจำเป็นต้องรายงาน",ask:"ท่านกลับมาส่งได้เมื่อใด",silent:true,
+       o:["เมื่อ สบข. รับรองฝ่ายแล้วสั่ง “เริ่มใช้”","เมื่อครบ 30 นาที","เมื่อหัวหน้าพลวิทยุอนุญาต"],
+       why:"การยกเลิกการห้ามใช้เป็นหน้าที่ของสถานีที่สั่งห้าม (สบข.) ด้วยคำว่า “เริ่มใช้”"},
+      {who:"จำปา",q:"จำปี จาก จำปา … (เสียงขาดหาย) … เปลี่ยน",ask:"ท่านฟังข่าวไม่ชัด ควรพูดว่า",
+       o:["จงส่งซ้ำ (SAY AGAIN)","จะส่งซ้ำ (I SAY AGAIN)","ผิด (WRONG)"],
+       why:"“จงส่งซ้ำ” คือขอให้อีกฝ่ายส่งใหม่ ส่วน “จะส่งซ้ำ” คือผู้ส่งบอกว่าตัวเองจะส่งซ้ำ"},
+      {who:"สถานการณ์",q:"ท่านส่งเลขพิกัดผิดไป 1 หมู่ระหว่างส่งข่าว",ask:"ท่านพูดว่าอะไรก่อนส่งค่าที่ถูก",silent:true,
+       o:["ผิด-ขอแก้ (CORRECTION)","ยกเลิกข่าวนี้ (DISREGARD THIS)","คอยนาน (WAIT OUT)"],
+       why:"CORRECTION ใช้แจ้งว่าส่งผิด และกำลังจะส่งค่าที่ถูก ส่วน DISREGARD THIS คือยกเลิกข่าวทั้งฉบับ"}]}
+  ];
+  var stars=store.get("stars",{}),cur=0;
+  function renderTabs(){
+    $("mTabs").innerHTML=MISSIONS.map(function(m,k){var s=stars[m.id]||0;
+      return '<button class="tab" role="tab" type="button" aria-selected="'+(k===cur)+'" data-k="'+k+'">'+m.name+'<small>'+m.role+' · <span class="star">'+"★".repeat(s)+'</span>'+"☆".repeat(3-s)+'</small></button>';}).join("");
+    $("mTabs").querySelectorAll(".tab").forEach(function(b){b.onclick=function(){cur=+b.dataset.k;renderTabs();startMission();}});
+  }
+  function startMission(){
+    var m=MISSIONS[cur];
+    runner($("mStage"),$("mBar"),m.items,function(it,i,n){
+      return '<p class="muted mono" style="font-size:13px">'+m.name+' · ขั้นที่ '+(i+1)+' / '+n+'</p>'+
+        '<div class="radio-line"><div class="t"><small>'+esc(it.who)+'</small>'+esc(it.q)+'</div>'+(it.silent?'':'<button class="play" type="button" data-say="'+esc(it.q.replace(/…|\(.*?\)/g," "))+'">▶ ฟัง</button>')+'</div>'+
+        '<p style="margin-top:12px"><strong>'+esc(it.ask)+'</strong></p>';
+    },function(s,n,again){
+      var st=s===n?3:s>=n-1?2:s>=n-3?1:0;
+      if(st>(stars[m.id]||0)){stars[m.id]=st;store.set("stars",stars);}
+      if(MISSIONS.every(function(x){return(stars[x.id]||0)>=1}))setDone("missions",true);
+      renderTabs();
+      $("mStage").innerHTML='<div class="stars" aria-label="'+st+' ดาว">'+"★".repeat(st)+'<span style="opacity:.3">'+"★".repeat(3-st)+'</span></div><p class="score">'+m.name+' เสร็จแล้ว ถูก '+s+' จาก '+n+'</p>'+
+        '<div class="toolbar" style="margin-top:12px"><button class="btn" type="button" id="mAgain">ทำภารกิจนี้อีกครั้ง</button>'+(cur<MISSIONS.length-1?'<button class="btn primary" type="button" id="mNext">ภารกิจถัดไป ›</button>':'<a class="btn primary" href="#quiz" style="text-decoration:none">ไปทำแบบทดสอบ ›</a>')+'</div>';
+      $("mAgain").onclick=again;
+      var nx=$("mNext");if(nx)nx.onclick=function(){cur++;renderTabs();startMission();};
+    });
+  }
+  renderTabs();startMission();
+
+  /* ---------- quiz ---------- */
+  var BANK=[
+    {q:"หลักสำคัญของระเบียบการวิทยุ 3 ประการคืออะไร",o:["รวดเร็ว แน่นอน ปลอดภัย","ดัง ชัดเจน สั้น","ประหยัด รวดเร็ว ยืดหยุ่น"],why:"ได้แก่ รวดเร็ว (Speed) แน่นอน (Accuracy) และปลอดภัย (Security)"},
+    {q:"ปรับความถี่หรือทดลองเครื่องได้นานไม่เกินเท่าใด",o:["10 วินาที","30 วินาที","1 นาที"],why:"การทดลองเครื่องเกิน 10 วินาทีถือเป็นข้อห้าม"},
+    {q:"ทำไมห้ามพูด “ROGER WILCO”",o:["WILCO มีความหมาย “ทราบ” อยู่แล้ว","ROGER ใช้ได้เฉพาะ สบข.","ต้องพูดเป็นภาษาไทยเท่านั้น"],why:"WILCO แปลว่า ทราบและจะปฏิบัติตาม จึงไม่ต้องพูด ROGER ซ้ำ"},
+    {q:"เลขรหัส ๒๕๓๗๙๖ อ่านอย่างไร",o:["โท ห้า สาม-หาม เจ็ด เก้า หก","สองแสนห้าหมื่นสามพันเจ็ดร้อยเก้าสิบหก","สอง ห้า สาม เจ็ด เก้า หก"],why:"รหัสอ่านเป็นรายตัว และเลข ๒ ที่อ่านรายตัวให้อ่านว่า “โท”"},
+    {q:"ได้ยิน สบข. ส่งคำว่า “ห้ามใช้” 3 ครั้ง ต้องทำอย่างไร",o:["หยุดส่งทันที ไม่ต้องตอบ จนกว่าจะได้รับคำสั่งใหม่","ตอบว่า ทราบ แล้วหยุดส่ง","ส่งข่าวที่ค้างให้หมดก่อนแล้วหยุด"],why:"สถานีที่ได้รับคำสั่งห้ามใช้อย่างฉุกเฉินไม่ต้องตอบ และงดใช้วิทยุทันที"},
+    {q:"ใครเป็นผู้ยกเลิกการห้ามใช้ และใช้คำว่าอะไร",o:["สถานีที่สั่งห้าม (สบข.) รับรองฝ่ายก่อน แล้วใช้คำว่า “เริ่มใช้”","สถานีลูกข่ายใดก็ได้ ใช้คำว่า “ปฏิบัติ”","ผู้บังคับหน่วย ใช้คำว่า “เลิก”"],why:"เป็นหน้าที่ของสถานีที่สั่งห้าม (สบข.) ต้องรับรองฝ่ายก่อน แล้วจึงใช้คำว่า SILENCE LIFTED หรือ “เริ่มใช้”"},
+    {q:"ข่าวความเร่งด่วนระดับใดที่ห้ามส่งแทรก",o:["ปกติ","ด่วน","ด่วนมาก"],why:"ข่าวปกติห้ามใช้ระเบียบการส่งแทรก"},
+    {q:"ในข่ายบังคับ ลูกข่ายสองสถานีจะติดต่อกันเองได้เมื่อใด",o:["เมื่อได้รับอนุญาตจาก สบข.","ได้ทุกเมื่อ","เฉพาะเวลามีข่าวด่วนที่สุด"],why:"ในข่ายบังคับ ติดต่อกันเองได้เมื่อ สบข. อนุญาตเท่านั้น"},
+    {q:"ถูกเรียกหลายสถานี แต่สถานีก่อนหน้าไม่ตอบเกินกี่วินาที สถานีถัดไปจึงตอบได้",o:["5 วินาที","10 วินาที","30 วินาที"],why:"ถ้าตอบช้าเกิน 5 วินาที ให้สถานีลำดับต่อไปตอบได้เลย"},
+    {q:"นามเรียกขานเต็มสำหรับวิทยุโทรศัพท์ไม่ควรยาวเกินเท่าใด",o:["3 พยางค์","5 พยางค์","3 คำ"],why:"นามเต็มไม่ควรเกิน 3 พยางค์ เช่น มะลิ หรือ เชียงใหม่"},
+    {q:"สถานีวิทยุกำลังส่งสูงควรตั้งห่างจาก บก. อย่างน้อยเท่าใด",o:["200 หลา","50 หลา","1 กิโลเมตร"],why:"เพราะข้าศึกอาจหาทิศหาที่ตั้งสถานี แล้วโจมตีโดน บก. ไปด้วย"},
+    {q:"ขั้นตอนใดต้องทำก่อนส่งข่าวเสมอเมื่อเปิดข่ายครั้งแรก",o:["รับรองฝ่าย","นัดพบเวลาใหม่","ตรวจข่าวค้างส่ง"],why:"เปิดข่ายครั้งแรกต้องรับรองฝ่ายเสมอ"},
+    {q:"CORRECTION หมายถึงอะไร",o:["ผิด-ขอแก้","ถูกต้อง","ยกเลิกข่าวนี้"],why:"CORRECTION ใช้แจ้งว่าส่งผิด และจะส่งค่าที่ถูกต่อ"},
+    {q:"ต้องการให้อีกฝ่ายส่งข้อความเดิมอีกครั้ง ใช้คำใด",o:["SAY AGAIN (จงส่งซ้ำ)","I SAY AGAIN (จะส่งซ้ำ)","READ BACK (จงอ่านทวน)"],why:"SAY AGAIN คือขอให้อีกฝ่ายส่งซ้ำ"},
+    {q:"ระบบอักษรลับที่ “แม้ข้อความขาดบางตอน ก็ยังถอดส่วนที่เหลือได้” คือคุณลักษณะใด",o:["เชื่อถือได้ (Reliability)","อ่อนตัว (Flexibility)","ประหยัด (Economy)"],why:"Reliability คือเข้า-ถอดไม่ผิดเพี้ยน และถอดส่วนที่เหลือได้แม้ข้อความขาดบางตอน"},
+    {q:"รหัสแบบ “ในวงจร (ONLINE)” คืออะไร",o:["ต่อเครื่องรหัสเข้ากับวงจรสื่อสารโดยตรง","พนักงานเข้า-ถอดรหัสด้วยมือ","ส่งรหัสผ่านอินเทอร์เน็ต"],why:"รหัสแบบ online ทำงานผ่านเครื่องรหัสที่ต่อกับวงจร พนักงานไม่ต้องเข้า-ถอดเอง"},
+    {q:"ข่ายใดในกองพลใช้ระบบ ปถ.คำพูด",o:["ข่าย ผบ.พล/บังคับบัญชากองพล","ข่ายการข่าวกรองของกองพล","ข่ายบังคับบัญชา/ยุทธการกองพล"],why:"ข่าย ผบ.พล/บังคับบัญชากองพล ใช้ ปถ.คำพูด ส่วนอีกสองข่ายใช้ ปส./คม."},
+    {q:"สบข. มีสิทธิ์เด็ดขาดในเรื่องใด",o:["การควบคุมทางเทคนิคของข่าย","การใช้สถานีทางยุทธวิธี","การแต่งตั้งพนักงานวิทยุ"],why:"สบข. ควบคุมทางเทคนิคเด็ดขาด แต่ไม่ก้าวก่ายการใช้สถานีทางยุทธวิธี"},
+    {q:"ข่าวด่วน (PRIORITY) ส่งแทรกได้ในกรณีใด",o:["เมื่อกำลังส่งข่าวปกติที่มีข้อความยาว","ทุกกรณี","เมื่อกำลังส่งข่าวด่วนมาก"],why:"ข่าวด่วนแทรกได้เฉพาะข่าวปกติที่ยาว"},
+    {q:"ข่ายอิสระ (Free net) มีลักษณะอย่างไร",o:["ทุกสถานีติดต่อกันได้โดยเสรี","ต้องผ่าน สบข. ทุกครั้ง","ใช้ได้เฉพาะเวลาฉุกเฉิน"],why:"ในข่ายอิสระ ทุกสถานีติดต่อกันได้โดยเสรี"},
+    {q:"ขั้นตอนใดอยู่ในการปิดข่าย",o:["ตรวจสอบข่าวค้างรับ ค้างส่ง","เทียบเวลาปัจจุบัน","ทดสอบความดัง ความชัดเจน"],why:"การปิดข่ายต้องตรวจข่าวค้างก่อน ส่วนการเทียบเวลาและทดสอบสัญญาณเป็นขั้นตอนเปิดข่าย"}
+  ];
+  var BUNIT=["principles","principles","prowords","phonetic","net","net","messages","net","calling","calling","principles","net","prowords","prowords","security","security","security","net","messages","net","net"];
+  BANK.forEach(function(b,k){b.id=k+1;b.u=BUNIT[k];});
+  /* Google Form (pre-filled link) */
+  var FORM="https://docs.google.com/forms/d/e/1FAIpQLSedOWtKpyK9h8Wvged0iErKPj6tfSRSe6pGsJUYP1QkYSEzUA/viewform";
+  var FE={name:1106428936,id:1297899345,cls:864109167,no:2001163924,type:486614158,score:1429685291,total:569557969,units:55249628,wrong:922875195,stars:1869476430,code:266300428};
+  function formLink(v){var q=["usp=pp_url"];Object.keys(FE).forEach(function(k){if(v[k]!==undefined&&v[k]!=="")q.push("entry."+FE[k]+"="+encodeURIComponent(v[k]));});return FORM+"?"+q.join("&");}
+  function unitText(by){return Object.keys(UNAME).filter(function(u){return by[u]}).map(function(u){return UNAME[u].split(" ")[0]+":"+by[u].ok+"/"+by[u].n}).join(" ");}
+  function starText(){var st=store.get("stars",{});return "เปิดข่าย "+(st.open||0)+" · ปิดข่าย "+(st.close||0)+" · พิเศษ "+(st.special||0);}
+  var student=store.get("student",{name:"",id:"",cls:"",no:""});
+  function hash(s){var h=5381;for(var i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))>>>0;return h.toString(36).toUpperCase().slice(-5).padStart(5,"0");}
+  function payload(r){return [r.name,r.id,r.cls,r.no,r.pre,r.score,r.total,r.date].join("|");}
+  function quizIntro(){
+    $("qBox").innerHTML='<h3>กรอกข้อมูลก่อนเริ่ม</h3><p class="muted" style="font-size:15px">ข้อมูลนี้แสดงในใบรายงานผล และส่งให้ครูเมื่อกดปุ่มส่งผล</p>'+
+      '<form class="form" id="qForm"><label for="sName">ยศ ชื่อ-สกุล<input type="text" id="sName" required value="'+esc(student.name)+'"></label>'+
+      '<label for="sId">เลขประจำตัว<input type="text" id="sId" required value="'+esc(student.id)+'"></label>'+
+      '<label for="sCls">หลักสูตร<input type="text" id="sCls" value="'+esc(student.cls)+'"></label>'+
+      '<label for="sNo">เลขที่<input type="text" id="sNo" inputmode="numeric" value="'+esc(student.no||"")+'"></label>'+
+      '<div style="display:flex;align-items:flex-end"><button class="btn primary" type="submit">เริ่มทำแบบทดสอบ</button></div></form>';
+    $("qForm").onsubmit=function(e){e.preventDefault();
+      student={name:$("sName").value.trim(),id:$("sId").value.trim(),cls:$("sCls").value.trim(),no:$("sNo").value.trim()};
+      if(!student.name||!student.id){toast("กรุณากรอกชื่อและเลขประจำตัว");return;}
+      store.set("student",student);startQuiz();};
+  }
+  function startQuiz(){
+    $("qBox").innerHTML='<div class="progress" aria-hidden="true"><i id="qBar"></i></div><div id="qStage"></div>';
+    var items=shuffle(BANK).slice(0,12);
+    runner($("qStage"),$("qBar"),items,function(it,i,n){return '<p class="muted mono" style="font-size:13px">ข้อ '+(i+1)+' / '+n+'</p><p style="font-size:18px"><strong>'+esc(it.q)+'</strong></p>';},
+      function(s,n,again,res){
+        var by={},wrong=[];items.forEach(function(it,k){by[it.u]=by[it.u]||{ok:0,n:0};by[it.u].n++;if(res[k])by[it.u].ok++;else wrong.push("Q"+it.id);});
+        var d=new Date(),date=d.getFullYear()+543+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)+" "+("0"+d.getHours()).slice(-2)+":"+("0"+d.getMinutes()).slice(-2);
+        var pr=store.get("pre",null),r={name:student.name,id:student.id,cls:student.cls||"-",no:student.no||"-",pre:pr?pr.s+"/"+pr.n:"-",score:s,total:n,date:date},pass=s>=Math.ceil(n*.8),code=hash(payload(r));
+        if(pass)setDone("quiz",true);
+        var best=store.get("best",0);if(s>best)store.set("best",s);
+        var txt="ใบรายงานผล · ระเบียบการวิทยุโทรศัพท์\nชื่อ: "+r.name+"\nเลขประจำตัว: "+r.id+"\nหลักสูตร: "+r.cls+"\nเลขที่: "+r.no+"\nก่อนเรียน: "+r.pre+"\nคะแนน: "+s+"/"+n+" ("+(pass?"ผ่าน":"ไม่ผ่าน")+")\nวันเวลา: "+r.date+"\nรหัสยืนยัน: "+code;
+        $("qBox").innerHTML='<div class="cert"><div class="stamp'+(pass?'':' fail')+'">'+(pass?'ผ่าน<br>เกณฑ์':'ยังไม่<br>ผ่าน')+'</div>'+
+          '<p class="mono muted" style="font-size:12px">วสว.กศ.รร.ส.สส. · ใบรายงานผล</p><h3 style="font-size:22px;margin-top:4px">ระเบียบการวิทยุโทรศัพท์</h3>'+
+          '<p class="score" style="font-size:40px;margin-top:6px">'+s+' <span class="muted" style="font-size:20px">/ '+n+'</span></p>'+
+          (pr?'<p style="margin-top:4px">ก่อนเรียน <strong class="mono">'+Math.round(pr.s/pr.n*100)+'%</strong> → หลังเรียน <strong class="mono" style="color:var(--ok)">'+Math.round(s/n*100)+'%</strong> '+(s/n>pr.s/pr.n?'<span style="color:var(--ok)">▲ เพิ่มขึ้น '+Math.round((s/n-pr.s/pr.n)*100)+' จุด</span>':'')+'</p>':'<p class="muted" style="font-size:14px;margin-top:4px">ไม่มีคะแนนทดสอบก่อนเรียน</p>')+'<dl><dt>ชื่อ</dt><dd>'+esc(r.name)+'</dd><dt>เลขประจำตัว</dt><dd class="mono">'+esc(r.id)+'</dd><dt>หลักสูตร</dt><dd>'+esc(r.cls)+'</dd><dt>เลขที่</dt><dd class="mono">'+esc(r.no)+'</dd><dt>วันเวลา</dt><dd class="mono">'+r.date+'</dd><dt>รหัสยืนยัน</dt><dd class="mono" style="color:var(--accent)">'+code+'</dd></dl></div>'+
+          '<div class="toolbar"><a class="btn primary" id="qSend" target="_blank" rel="noopener" style="text-decoration:none">ส่งผลหลังเรียนให้ครู ›</a><button class="btn" type="button" id="qCopy">คัดลอกผล</button><button class="btn" type="button" id="qRetry">ทำแบบทดสอบใหม่</button></div>'+
+          (pass?'':'<p class="muted" style="font-size:15px">ทบทวนบทที่ตอบผิดแล้วลองใหม่ได้ ทุกครั้งจะสุ่มข้อใหม่</p>');
+        $("qCopy").onclick=function(){
+          try{navigator.clipboard.writeText(txt).then(function(){toast("คัดลอกแล้ว นำไปวางในไลน์ได้เลย")},function(){fallbackCopy(txt)});}catch(e){fallbackCopy(txt)}};
+        $("qRetry").onclick=startQuiz;
+        $("qSend").href=formLink({name:r.name,id:r.id,cls:student.cls,no:student.no,type:"หลังเรียน",score:s,total:n,units:unitText(by),wrong:wrong.join(" "),stars:starText(),code:code});
+        $("qSend").onclick=function(){toast("เปิดฟอร์มแล้ว ตอบความพึงพอใจ แล้วกด “ส่ง”");};
+      });
+  }
+  function fallbackCopy(t){var a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");toast("คัดลอกแล้ว")}catch(e){toast("คัดลอกไม่ได้ ให้แคปหน้าจอแทน")}a.remove();}
+  quizIntro();
+
+  /* ---------- pre-test: fixed 10 items (bank index → unit), no feedback until the end ---------- */
+  var PRE=[[0,"principles"],[1,"principles"],[3,"phonetic"],[2,"prowords"],[9,"calling"],[7,"net"],[11,"net"],[4,"net"],[6,"messages"],[14,"security"]];
+  var UNAME={principles:"1 หลักการ",phonetic:"2 การออกเสียง",prowords:"3 Proword",calling:"4 การเรียกขาน",net:"5 ข่ายและ สบข.",messages:"6 ข่าวและแบบบันทึก",security:"7 รักษาความปลอดภัย"};
+  function preIntro(){
+    var pr=store.get("pre",null);
+    if(pr){preResult(pr);return;}
+    $("preBox").innerHTML='<h3>กรอกข้อมูลก่อนเริ่ม</h3><form class="form" id="pForm"><label for="pName">ยศ ชื่อ-สกุล<input type="text" id="pName" required value="'+esc(student.name)+'"></label>'+
+      '<label for="pId">เลขประจำตัว<input type="text" id="pId" required value="'+esc(student.id)+'"></label>'+
+      '<label for="pCls">หลักสูตร<input type="text" id="pCls" value="'+esc(student.cls)+'"></label>'+
+      '<label for="pNo">เลขที่<input type="text" id="pNo" inputmode="numeric" value="'+esc(student.no||"")+'"></label>'+
+      '<div style="display:flex;align-items:flex-end"><button class="btn primary" type="submit">เริ่มทดสอบก่อนเรียน</button></div></form>';
+    $("pForm").onsubmit=function(e){e.preventDefault();
+      student={name:$("pName").value.trim(),id:$("pId").value.trim(),cls:$("pCls").value.trim(),no:$("pNo").value.trim()};
+      if(!student.name||!student.id){toast("กรุณากรอกชื่อและเลขประจำตัว");return;}
+      store.set("student",student);quizIntro();preRun();};
+  }
+  function preRun(){
+    var i=0,ans=[];
+    function show(){
+      if(i>=PRE.length){
+        var by={},s=0,wrong=[];
+        PRE.forEach(function(p,k){by[p[1]]=by[p[1]]||{ok:0,n:0};by[p[1]].n++;if(ans[k]){by[p[1]].ok++;s++;}else wrong.push("Q"+(p[0]+1));});
+        var d=new Date(),pr={s:s,n:PRE.length,by:by,wrong:wrong.join(" "),date:d.getFullYear()+543+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)};
+        store.set("pre",pr);setDone("pretest",true);preResult(pr);return;
+      }
+      var it=BANK[PRE[i][0]],h='<div class="progress" aria-hidden="true"><i style="width:'+(i/PRE.length*100)+'%"></i></div><p class="muted mono" style="font-size:13px">ข้อ '+(i+1)+' / '+PRE.length+'</p><p style="font-size:18px"><strong>'+esc(it.q)+'</strong></p><div class="opts">';
+      shuffle(it.o.map(function(_,k){return k})).forEach(function(k){h+='<button type="button" class="opt" data-k="'+k+'">'+esc(it.o[k])+'</button>';});
+      h+='<button type="button" class="opt" data-k="-1" style="color:var(--muted)">ยังไม่รู้</button></div>';
+      $("preBox").innerHTML=h;
+      $("preBox").querySelectorAll(".opt").forEach(function(b){b.onclick=function(){ans[i]=+b.dataset.k===0;i++;show();};});
+    }
+    show();
+  }
+  function preResult(pr){
+    var pct=Math.round(pr.s/pr.n*100),rows="";
+    Object.keys(UNAME).forEach(function(u){var b=pr.by[u];if(!b)return;var full=b.ok===b.n;
+      rows+='<tr><td><a href="#'+u+'">บท '+UNAME[u]+'</a></td><td class="mono">'+b.ok+'/'+b.n+'</td><td>'+(full?'<span style="color:var(--ok)">รู้แล้ว</span>':'<strong style="color:var(--accent)">ควรเน้น</strong>')+'</td></tr>';});
+    $("preBox").innerHTML='<p class="muted mono" style="font-size:13px">ผลทดสอบก่อนเรียน · '+esc(pr.date||"")+'</p><p class="score" style="font-size:40px">'+pr.s+' <span class="muted" style="font-size:20px">/ '+pr.n+' ('+pct+'%)</span></p>'+
+      '<p>'+(pct>=80?'พื้นฐานดีมาก เรียนทบทวนแล้วไปฝึกภารกิจจำลองได้เลย':pct>=50?'มีพื้นฐานบางส่วน ให้เน้นบทที่ขึ้นว่า “ควรเน้น”':'เริ่มจากศูนย์ได้เลย เรียนไล่ตามลำดับตั้งแต่บทที่ 1')+'</p>'+
+      '<div class="tbl-wrap"><table><thead><tr><th>บท</th><th>ถูก</th><th>ผล</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+      '<div class="toolbar"><a class="btn primary" id="preSend" target="_blank" rel="noopener" style="text-decoration:none">ส่งผลก่อนเรียนให้ครู ›</a><a class="btn" href="#principles" style="text-decoration:none">เริ่มเรียนบทที่ 1</a><button class="btn" type="button" id="preReset">ทำใหม่</button></div><p class="muted" style="font-size:14px">กดส่งผลแล้วฟอร์มจะเปิดพร้อมคะแนน ให้กด “ส่ง” ท้ายฟอร์ม (ข้ามส่วนความพึงพอใจได้)</p>';
+    $("preSend").href=formLink({name:student.name,id:student.id,cls:student.cls,no:student.no,type:"ก่อนเรียน",score:pr.s,total:pr.n,units:unitText(pr.by),wrong:pr.wrong||"",code:hash([student.name,student.id,student.cls,student.no,"pre",pr.s,pr.n,pr.date].join("|"))});
+    $("preReset").onclick=function(){store.set("pre",null);preIntro();};
+  }
+  preIntro();
+
+  /* teacher verify */
+  $("vBtn").onclick=function(){
+    var t=$("vText").value,g=function(k){var m=t.match(new RegExp(k+":\\s*(.*)"));return m?m[1].trim():""};
+    var sc=g("คะแนน").match(/(\d+)\/(\d+)/),r={name:g("ชื่อ"),id:g("เลขประจำตัว"),cls:g("หลักสูตร"),no:g("เลขที่"),pre:g("ก่อนเรียน")||"-",score:sc?+sc[1]:"",total:sc?+sc[2]:"",date:g("วันเวลา")};
+    var ok=sc&&hash(payload(r))===g("รหัสยืนยัน");
+    $("vOut").innerHTML=ok?'<strong style="color:var(--ok)">รหัสถูกต้อง ข้อมูลไม่ถูกแก้ไข</strong>':'<strong style="color:var(--bad)">รหัสไม่ตรง ข้อมูลอาจถูกแก้ไข</strong>';
+  };
+})();
+</script>
+</body>
+</html>
