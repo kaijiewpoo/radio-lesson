@@ -6,16 +6,16 @@
 
 วสว.กศ.รร.ส.สส. · ผู้สอน จ.วรากร
 
-[![เปิดบทเรียน](https://img.shields.io/badge/%E2%96%B6%20%E0%B9%80%E0%B8%9B%E0%B8%B4%E0%B8%94%E0%B8%9A%E0%B8%97%E0%B9%80%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%99-kaijiewpoo.github.io-ffb547?style=for-the-badge&labelColor=151b17)](https://kaijiewpoo.github.io/radio-lesson/)
+[![Open lesson](https://img.shields.io/badge/%E2%96%B6%20Open%20lesson-kaijiewpoo.github.io-ffb547?style=for-the-badge&labelColor=151b17)](https://kaijiewpoo.github.io/radio-lesson/)
 
 <img src="qr/qr-lesson.png" alt="QR เปิดบทเรียน" width="180">
 
 **สแกนด้วยมือถือ** · ใช้ได้ทั้ง Android และ iPhone · ไม่ต้องติดตั้งแอป · ไม่ต้องล็อกอิน
 
 ![Pages](https://img.shields.io/badge/GitHub%20Pages-online-2ea043?style=flat-square)
-![หน่วยเรียน](https://img.shields.io/badge/%E0%B8%9A%E0%B8%97%E0%B9%80%E0%B8%A3%E0%B8%B5%E0%B8%A2%E0%B8%99-9%20%E0%B8%9A%E0%B8%97-c4561a?style=flat-square)
-![ภารกิจ](https://img.shields.io/badge/%E0%B8%A0%E0%B8%B2%E0%B8%A3%E0%B8%81%E0%B8%B4%E0%B8%88%E0%B8%88%E0%B8%B3%E0%B8%A5%E0%B8%AD%E0%B8%87-3-ffb547?style=flat-square)
-![เกณฑ์ผ่าน](https://img.shields.io/badge/%E0%B9%80%E0%B8%81%E0%B8%93%E0%B8%91%E0%B9%8C%E0%B8%9C%E0%B9%88%E0%B8%B2%E0%B8%99-80%25-151b17?style=flat-square)
+![Lessons](https://img.shields.io/badge/Lessons-9-c4561a?style=flat-square)
+![Missions](https://img.shields.io/badge/Missions-3-ffb547?style=flat-square)
+![Pass](https://img.shields.io/badge/Pass%20mark-80%25-151b17?style=flat-square)
 
 </div>
 
@@ -23,7 +23,7 @@
 
 ## ✨ มีอะไรในบทเรียน
 
-| | |
+| ส่วน | รายละเอียด |
 |---|---|
 | 🎧 **ฟังเสียงตัวอย่าง** | ปุ่ม ▶ ฟัง อ่านข้อความวิทยุเป็นภาษาไทย ปรับความเร็วได้ (ช้ามาก / ช้า / ปกติ) |
 | 📝 **ทดสอบก่อนเรียน** | 10 ข้อ รู้พื้นฐานก่อนเริ่มสอน |
